@@ -13,6 +13,10 @@ cache:
   timeout: 1800
   directories:
     - ./v8build
+    - $HOME/Library/Caches/Homebrew
+
+before_cache:
+  - brew cleanup
 
 jobs:
   include:
