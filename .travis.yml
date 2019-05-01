@@ -16,28 +16,11 @@ cache:
 
 jobs:
   include:
-    # separate fetching and building of V8 into multiple shared-cache stages to avoid hitting the 50 minute time limit
     - stage: fetch-v8
       install: ./.travis/fetch-v8.sh
       script: skip
       # include `skip-stages` anywhere in the commit message to skip all of these V8-related stages
       # when the cache is up-to-date, this saves a lot of time
-      if: commit_message !~ /skip-stages/
-
-    # build dependencies
-    - stage: build-v8-stage-1
-      install: ./.travis/build-v8.sh antlr4 icu inspector torque v8_libbase v8_libplatform v8_libsampler
-      script: skip
-      if: commit_message !~ /skip-stages/
-    - stage: build-v8-stage-2
-      install: ./.travis/build-v8.sh v8_base
-      script: skip
-      if: commit_message !~ /skip-stages/
-
-    # finally build V8
-    - stage: build-v8-stage-3
-      install: ./.travis/build-v8.sh d8 v8
-      script: skip
       if: commit_message !~ /skip-stages/
 
     # now build and deploy MultiChain
