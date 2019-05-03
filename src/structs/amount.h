@@ -35,7 +35,7 @@ class CFeeRate
 private:
     CAmount nSatoshisPerK; // unit is satoshis-per-1,000-bytes
 public:
-    CFeeRate() : nSatoshisPerK(0) { }
+    CFeeRate() : nSatoshisPerK(0) { } // might have to change this value, as it seems to represent fixed tx-fee value
     explicit CFeeRate(const CAmount& _nSatoshisPerK): nSatoshisPerK(_nSatoshisPerK) { }
     CFeeRate(const CAmount& nFeePaid, size_t nSize);
     CFeeRate(const CFeeRate& other) { nSatoshisPerK = other.nSatoshisPerK; }

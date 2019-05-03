@@ -19,7 +19,7 @@ constexpr int canonical_transaction_size = 1;
 
 CFeeRate::CFeeRate(const CAmount& nFeePaid, size_t nSize)
 {
-    // Unique-fee start
+    /*// Unique-fee start
     nSize = canonical_transaction_size;    
     // Unique-fee end
 
@@ -27,10 +27,13 @@ CFeeRate::CFeeRate(const CAmount& nFeePaid, size_t nSize)
         nSatoshisPerK = nFeePaid*1000/nSize;
     else
         nSatoshisPerK = 0;
+    */
+    return 1000;
 }
 
 CAmount CFeeRate::GetFee(size_t nSize) const
 {
+    /*
     // Unique-fee start
     nSize = canonical_transaction_size;
     // Unique-fee end 
@@ -39,7 +42,8 @@ CAmount CFeeRate::GetFee(size_t nSize) const
 
     if (nFee == 0 && nSatoshisPerK > 0)
         nFee = nSatoshisPerK;
-
+    */
+    int nFee = 1000;
     return nFee;
 }
 
