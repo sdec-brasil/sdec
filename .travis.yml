@@ -1,0 +1,153 @@
+os: osx
+osx_image: xcode10.1
+
+# do not build tagged commits
+# this way we avoid rebuilding upon successful deployment (see below)
+if: tag IS blank
+
+language: cpp
+
+# cache V8 artifacts across stages
+cache:
+  # large cache requires large timeout for transfer
+  timeout: 1800
+  directories:
+    - ./v8build
+    - $HOME/Library/Caches/Homebrew
+
+before_cache:
+  - brew cleanup
+
+jobs:
+  include:
+    - stage: fetch-v8
+      install: ./.travis/fetch-v8.sh
+      script: skip
+      # include `skip-stages` anywhere in the commit message to skip all of these V8-related stages
+      # when the cache is up-to-date, this saves a lot of time
+      if: commit_message !~ /skip-stages/
+
+    # now build and deploy MultiChain
+    - stage: build-multichain
+      addons:
+        # use addon instead of `brew install` since it does not exit with 1
+        # if packages are already installed
+        homebrew:
+          packages:
+            - autoconf
+            - automake
+            - boost
+            - berkeley-db4
+            - libtool
+            - nasm
+            - openssl
+            - pkg-config
+            - python
+            - rename
+
+      install:
+        # uninstall pre-installed boost and use 1.57
+        - brew uninstall --ignore-dependencies boost
+        - brew install boost@1.57
+        - brew link boost@1.57 --force
+
+        # reinstall python, for some reason the default installation errors on importing hashlib
+        - brew uninstall --ignore-dependencies python@2
+        - brew install python@2
+
+        # make V8 libraries available
+        - pip install pathlib2
+        - python ./depends/v8_data_lib.py --multichain $(pwd)
+
+        # hide dynamic libraries from the build system so we get a static build
+        - rename -e 's/.dylib/.dylib.hidden/' /usr/local/opt/boost\@1.57/lib/*.dylib
+        - rename -e 's/.dylib/.dylib.hidden/' /usr/local/opt/berkeley-db\@4/lib/*.dylib
+
+        # reinstall OpenSSL AFTER reinstalling python, but with static libraries only
+        - sed -i '' 's/^    shared$/    no-shared/' /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/openssl.rb
+        - brew reinstall openssl --build-from-source
+        - export CPPFLAGS=-I/usr/local/opt/openssl/include
+        - export LDFLAGS=-L/usr/local/opt/openssl/lib
+
+        # disable all warnings to reduce build verbosity
+        - export CXXFLAGS=-w
+        - ./autogen.sh
+        - ./configure --with-gui=no --with-libs=no --with-miniupnpc=no --with-boost=/usr/local/opt/boost\@1.57
+        - make -j2
+
+      script:
+        # tiny test
+        - mkdir /tmp/mc-test
+        - ./src/multichain-util create test 20006 -datadir=/tmp/mc-test -rpcpassword=rpcpass
+        - ./src/multichaind test 20006 -daemon -datadir=/tmp/mc-test -pid=/tmp/mc-test/test/multichain.pid
+        - ./src/multichain-cli test -datadir=/tmp/mc-test getblockchaininfo
+        - ./src/multichain-cli test -datadir=/tmp/mc-test stop
+
+      after_success:
+        # get the upstream so we can figure out how far behind we are
+        - git remote add upstream https://github.com/sdec-brasil/multichain.git
+        - git fetch upstream
+
+        # number of commits that have occurred since we last merged
+        - MISSED_UPSTREAM_COMMITS=$(git rev-list --count ${TRAVIS_BRANCH}..upstream/${TRAVIS_BRANCH})
+
+        # skip this many commits (may be zero) in order to get the hash of the last upstream commit we merged
+        - LAST_UPSTREAM_COMMIT_HASH=$(git rev-list --max-count 1 --skip ${MISSED_UPSTREAM_COMMITS} upstream/${TRAVIS_BRANCH})
+        - LAST_UPSTREAM_COMMIT_DATE_ISO=$(git show ${LAST_UPSTREAM_COMMIT_HASH} --format=%ai --no-patch)
+        - LAST_UPSTREAM_COMMIT_DATE=$(TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" "${LAST_UPSTREAM_COMMIT_DATE_ISO}" "+%Y%m%dT%H%M%S")
+
+        # this names the deployed tag and enables the deploy phase
+        - export TRAVIS_TAG=${TRAVIS_BRANCH}-${LAST_UPSTREAM_COMMIT_DATE}
+
+      before_deploy:
+        # release directory
+        - RELEASE_DIR=./multichain-${TRAVIS_BRANCH}
+        - mkdir ${RELEASE_DIR}
+
+        # generate small README
+        - LAST_UPSTREAM_COMMIT_INFO=$(git show ${LAST_UPSTREAM_COMMIT_HASH} --format=oneline --no-patch)
+        - echo "Build of ${TRAVIS_BRANCH} at ${LAST_UPSTREAM_COMMIT_INFO} (${LAST_UPSTREAM_COMMIT_DATE_ISO})" > ${RELEASE_DIR}/README
+        - echo "https://github.com/sdec-brasil/multichain/tree/${LAST_UPSTREAM_COMMIT_HASH}" >> ${RELEASE_DIR}/README
+
+        # copy binaries
+        - cp ./src/multichain-cli ${RELEASE_DIR}
+        - cp ./src/multichain-util ${RELEASE_DIR}
+        - cp ./src/multichaind ${RELEASE_DIR}
+        - cp ./src/multichaind-cold ${RELEASE_DIR}
+
+        # name and build the archive
+        - LAST_UPSTREAM_COMMIT_HASH_SHORT=$(git show $LAST_UPSTREAM_COMMIT_HASH --format=%h --no-patch)
+        - RELEASE_ARCHIVE=./multichain-${TRAVIS_BRANCH}-${LAST_UPSTREAM_COMMIT_HASH_SHORT}-${TRAVIS_OS_NAME}.tar.gz
+        - tar czf ${RELEASE_ARCHIVE} ${RELEASE_DIR}
+
+        # create checksums for archive
+        - RELEASE_ARCHIVE_SHA1=${RELEASE_ARCHIVE}.sha1
+        - shasum -a 1 ${RELEASE_ARCHIVE} | cut -d ' ' -f 1 > ${RELEASE_ARCHIVE_SHA1}
+        - RELEASE_ARCHIVE_SHA256=${RELEASE_ARCHIVE}.sha256
+        - shasum -a 256 ${RELEASE_ARCHIVE} | cut -d ' ' -f 1 > ${RELEASE_ARCHIVE_SHA256}
+
+        # print information to build log for possible later verification
+        - echo -e "Deploying ${RELEASE_ARCHIVE}\nSize   $(stat -f "%z" ${RELEASE_ARCHIVE})\nSHA1   $(< ${RELEASE_ARCHIVE_SHA1})\nSHA256 $(< ${RELEASE_ARCHIVE_SHA256})"
+
+      deploy:
+        name: "${TRAVIS_BRANCH} at ${LAST_UPSTREAM_COMMIT_HASH_SHORT}"
+        body: "Build of https://github.com/sdec-brasil/multichain/tree/${LAST_UPSTREAM_COMMIT_HASH_SHORT} (build log available at ${TRAVIS_BUILD_WEB_URL})"
+        # deploy as GitHub release
+        provider: releases
+        # unencrypted GitHub OAuth token, generated using `travis setup releases` and set in Travis settings
+        # this means you have to answer `no` when prompted whether to encrypt the API key
+        # instead, add an environment variable `GITHUB_OAUTH_TOKEN` to your repository settings in Travis,
+        # and select its value not to be displayed in the build log
+        api_key: ${GITHUB_OAUTH_TOKEN}
+        file:
+          - ${RELEASE_ARCHIVE}
+          - ${RELEASE_ARCHIVE_SHA1}
+          - ${RELEASE_ARCHIVE_SHA256}
+        # otherwise Travis would clean out generated archive
+        skip_cleanup: true
+        # for the same tag the file can be overwritten
+        overwrite: true
+        on:
+          repo: ${TRAVIS_REPO_SLUG}
+          # fulfilled because we set TRAVIS_TAG
+          tags: true
