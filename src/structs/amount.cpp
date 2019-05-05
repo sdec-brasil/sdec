@@ -12,10 +12,6 @@
  * Because of that, we will consider here every transaction as being of the same size
  */
 
-// Unique-fee start
-constexpr int canonical_transaction_size = 1;
-// Unique-fee end
-
 
 CFeeRate::CFeeRate(const CAmount& nFeePaid, size_t nSize)
 {
@@ -29,10 +25,13 @@ CFeeRate::CFeeRate(const CAmount& nFeePaid, size_t nSize)
         nSatoshisPerK = 0;
     */
     nSatoshisPerK = 1000 * 1000;
+    
+    // O valor de nSatoshisPerK que determina a taxa fixa que sera cobrada de todas as transacoes da chain.
+    // Olhando para o nosso caso de uso especificamente:
+    // 1 - Queremos que a unidade minima seja 0.001 (unidades)... Sabemos que isso equivale a 10^5 satoshis
+    // 2 - Queremos cobrar 0.01 ( da nossa unidade ), como taxa fixa de transacoes. Isso equivale a 10^6 satoshis.
+    // 3 - Com isso, podemos concluir que setando um valor de 10^6 satoshis por transacao, estamos setando 0.01 da nossa unidade custom como custo fixo de transacao.
 
-    // 1 satoshi -> 10^-8..
-    // Um milavo -> 10^-3... Logo, um milavo equivale a 10^5 satoshis.
-    // Gostariamos de cobrar 10 milavos por transacao. Isso equivale a cobrar 10^6 satoshi por KB
 }
 
 CAmount CFeeRate::GetFee(size_t nSize) const
