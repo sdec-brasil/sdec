@@ -43,7 +43,10 @@ CAmount CFeeRate::GetFee(size_t nSize) const
     if (nFee == 0 && nSatoshisPerK > 0)
         nFee = nSatoshisPerK;
     */
-    CAmount nFee = 1000;
+    
+    CAmount nFee = nSatoshisPerK / 1000;
+    
+    return nFee;
 }
 
 std::string CFeeRate::ToString() const
