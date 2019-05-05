@@ -28,7 +28,11 @@ CFeeRate::CFeeRate(const CAmount& nFeePaid, size_t nSize)
     else
         nSatoshisPerK = 0;
     */
-    nSatoshisPerK = 1000;
+    nSatoshisPerK = 1000 * 1000;
+
+    // 1 satoshi -> 10^-8..
+    // Um milavo -> 10^-3... Logo, um milavo equivale a 10^5 satoshis.
+    // Gostariamos de cobrar 10 milavos por transacao. Isso equivale a cobrar 10^6 satoshi por KB
 }
 
 CAmount CFeeRate::GetFee(size_t nSize) const
@@ -44,8 +48,7 @@ CAmount CFeeRate::GetFee(size_t nSize) const
         nFee = nSatoshisPerK;
     */
     
-    CAmount nFee = nSatoshisPerK / 1000;
-    
+    CAmount nFee = nSatoshisPerK;
     return nFee;
 }
 
