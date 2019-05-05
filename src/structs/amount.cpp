@@ -8,21 +8,46 @@
 
 #include "utils/tinyformat.h"
 
+/* We want to fix a single transaction fee for every transaction in our blockchain 
+ * Because of that, we will consider here every transaction as being of the same size
+ */
+
+
 CFeeRate::CFeeRate(const CAmount& nFeePaid, size_t nSize)
 {
+    /*// Unique-fee start
+    nSize = canonical_transaction_size;    
+    // Unique-fee end
+
     if (nSize > 0)
         nSatoshisPerK = nFeePaid*1000/nSize;
     else
         nSatoshisPerK = 0;
+    */
+    nSatoshisPerK = 1000 * 1000;
+    
+    // O valor de nSatoshisPerK que determina a taxa fixa que sera cobrada de todas as transacoes da chain.
+    // Olhando para o nosso caso de uso especificamente:
+    // 1 - Queremos que a unidade minima seja 0.001 (unidades)... Sabemos que isso equivale a 10^5 satoshis
+    // 2 - Queremos cobrar 0.01 ( da nossa unidade ), como taxa fixa de transacoes. Isso equivale a 10^6 satoshis.
+    // 3 - Com isso, podemos concluir que setando um valor de 10^6 satoshis por transacao, estamos setando 0.01 da nossa unidade custom como custo fixo de transacao.
+
 }
 
 CAmount CFeeRate::GetFee(size_t nSize) const
 {
+    /*
+    // Unique-fee start
+    nSize = canonical_transaction_size;
+    // Unique-fee end 
+    
     CAmount nFee = nSatoshisPerK*nSize / 1000;
 
     if (nFee == 0 && nSatoshisPerK > 0)
         nFee = nSatoshisPerK;
-
+    */
+    
+    CAmount nFee = nSatoshisPerK;
     return nFee;
 }
 
