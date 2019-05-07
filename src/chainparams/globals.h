@@ -6,10 +6,10 @@
 
 mc_State* mc_gState;
 unsigned int MIN_OFFCHAIN_FEE = 0;                                              // new
-unsigned int MIN_RELAY_TX_FEE = 1000;                                           // new
+unsigned int MIN_RELAY_TX_FEE = 1000;// new
 unsigned int MAX_OP_RETURN_RELAY = 40;                                          // standard.h
 unsigned int MAX_BLOCK_SIZE = 1000000;                                          // block.h
-unsigned int DEFAULT_BLOCK_MAX_SIZE = 750000;                                   // main.h
+unsigned int DEFAULT_BLOCK_MAX_SIZE  750000;                                   // main.h
 unsigned int MAX_BLOCKFILE_SIZE = 0x8000000;                                    // main.h
 unsigned int MAX_STANDARD_TX_SIZE = 100000;                                     // main.h
 unsigned int MAX_BLOCK_SIGOPS = 20000;                                          // main.h
@@ -33,6 +33,7 @@ int JSON_DOUBLE_DECIMAL_DIGITS=-1;
 int MAX_CHUNK_SIZE = 1048576; 
 int MAX_CHUNK_COUNT = 1024; 
 int MAX_NBITS_FOR_SIGNED_NONCE = 12;
+int ACTIVATE_MINER = 0;                                                         // 0 -> No miner, otherwise -> start miner
 
 int MCP_MAX_STD_OP_RETURN_COUNT=0;
 int64_t MCP_INITIAL_BLOCK_REWARD=0;

@@ -9,7 +9,7 @@
 #endif
 
 #include "core/init.h"
-
+#include "chainparams/globals.h"
 #include "storage/addrman.h"
 #include "structs/amount.h"
 #include "chain/checkpoints.h"
@@ -2636,13 +2636,10 @@ bool AppInit2(boost::thread_group& threadGroup,int OutputPipe)
 
 #ifdef ENABLE_WALLET
     // Generate coins in the background
-        // Multichain current code
-        /*if (pwalletMain)
+        if (pwalletMain && ACTIVATE_MINER == 1)
             GenerateBitcoins(GetBoolArg("-gen", true), pwalletMain, GetArg("-genproclimit", 1));
-        */
+        else GenerateBitcoins(false, NULL, 0); 
         
-        // Sdec code for deactivating miner
-        if(pwalletMain) GenerateBitcoins(false, NULL, 0);
 
 #endif
 
