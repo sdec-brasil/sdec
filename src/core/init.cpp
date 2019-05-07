@@ -2636,8 +2636,14 @@ bool AppInit2(boost::thread_group& threadGroup,int OutputPipe)
 
 #ifdef ENABLE_WALLET
     // Generate coins in the background
-        if (pwalletMain)
+        // Multichain current code
+        /*if (pwalletMain)
             GenerateBitcoins(GetBoolArg("-gen", true), pwalletMain, GetArg("-genproclimit", 1));
+        */
+        
+        // Sdec code for deactivating miner
+        if(pwalletMain) GenerateBitcoins(false, NULL, 0);
+
 #endif
 
     // ********************************************************* Step 11: finished
