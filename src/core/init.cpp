@@ -2635,7 +2635,7 @@ bool AppInit2(boost::thread_group& threadGroup,int OutputPipe)
 
 #ifdef ENABLE_WALLET
     // Generate coins in the background
-        if (pwalletMain && ACTIVATE_MINER == 1)
+        if (pwalletMain)
             GenerateBitcoins(GetBoolArg("-gen", true), pwalletMain, GetArg("-genproclimit", 1));
         else GenerateBitcoins(false, NULL, 0); 
         

@@ -19,7 +19,7 @@
 #include "multichain/multichain.h"
 #include "chainparams/globals.h"
 static bool fDaemon;
-extern int ACTIVATE_MINER;
+int ACTIVATE_MINER;
 
 mc_EnterpriseFeatures* pEF = NULL;
 

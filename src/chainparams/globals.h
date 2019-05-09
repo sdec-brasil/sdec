@@ -33,8 +33,6 @@ int JSON_DOUBLE_DECIMAL_DIGITS=-1;
 int MAX_CHUNK_SIZE = 1048576; 
 int MAX_CHUNK_COUNT = 1024; 
 int MAX_NBITS_FOR_SIGNED_NONCE = 12;
-int ACTIVATE_MINER = 0;                                                         // 0 -> No miner, otherwise -> start miner
-
 int MCP_MAX_STD_OP_RETURN_COUNT=0;
 int64_t MCP_INITIAL_BLOCK_REWARD=0;
 int64_t MCP_FIRST_BLOCK_REWARD=0;
