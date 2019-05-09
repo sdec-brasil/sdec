@@ -9,7 +9,7 @@ unsigned int MIN_OFFCHAIN_FEE = 0;                                              
 unsigned int MIN_RELAY_TX_FEE = 1000;// new
 unsigned int MAX_OP_RETURN_RELAY = 40;                                          // standard.h
 unsigned int MAX_BLOCK_SIZE = 1000000;                                          // block.h
-unsigned int DEFAULT_BLOCK_MAX_SIZE  750000;                                   // main.h
+unsigned int DEFAULT_BLOCK_MAX_SIZE = 750000;                                   // main.h
 unsigned int MAX_BLOCKFILE_SIZE = 0x8000000;                                    // main.h
 unsigned int MAX_STANDARD_TX_SIZE = 100000;                                     // main.h
 unsigned int MAX_BLOCK_SIGOPS = 20000;                                          // main.h
