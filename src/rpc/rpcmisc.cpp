@@ -283,6 +283,14 @@ bool paramtobool(Value param)
 
 Value setruntimeparam(const json_spirit::Array& params, bool fHelp)
 {
+    LogPrintf("--------------------- CHAMAMOS SETRUNTIMEPARAM --------------------- \n");
+    LogPrintf("Vou imprimir os parametros recebidos\n");
+    for(const auto& V : params)
+    {
+        string P = V.get_str();
+        LogPrintf("Recebemos o seguinte parametro de runtime %s\n", P.c_str());
+    }
+
     if (fHelp || params.size() != 2)                                            
         throw runtime_error("Help message not found\n");
     
