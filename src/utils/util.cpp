@@ -297,6 +297,7 @@ static void InterpretNegativeSetting(string name, map<string, string>& mapSettin
 
 void ParseParameters(int argc, const char* const argv[])
 {
+    LogPrintf("--------------------- Funcao ParseParameters foi chamada --------------------\n");
     mapArgs.clear();
     mapMultiArgs.clear();
 
@@ -323,12 +324,15 @@ void ParseParameters(int argc, const char* const argv[])
         if (str[0] != '-')
             break;
 */
+
         if (str[0] == '-')
         {
             // Interpret --foo as -foo.
             // If both --foo and -foo are set, the last takes effect.
             if (str.length() > 1 && str[1] == '-')
                 str = str.substr(1);
+
+            LogPrintf("Param = %s, Valor = %s\n", str.c_str(), strValue.c_str());
             mapArgs[str] = strValue;
             mapMultiArgs[str].push_back(strValue);
         }
