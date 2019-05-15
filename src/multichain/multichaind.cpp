@@ -19,6 +19,7 @@
 
 #include "multichain/multichain.h"
 #include "chainparams/globals.h"
+
 static bool fDaemon;
 
 mc_EnterpriseFeatures* pEF = NULL;
@@ -177,7 +178,8 @@ bool AppInit(int argc, char* argv[])
     is_daemon=false;
 #ifndef WIN32
         fDaemon = GetBoolArg("-daemon", false);
-        
+
+
         if (fDaemon)
         {
             delete pEF;

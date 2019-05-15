@@ -283,6 +283,11 @@ bool paramtobool(Value param)
 
 Value setruntimeparam(const json_spirit::Array& params, bool fHelp)
 {
+    for(const auto& V : params)
+    {
+        string P = V.get_str();
+    }
+
     if (fHelp || params.size() != 2)                                            
         throw runtime_error("Help message not found\n");
     

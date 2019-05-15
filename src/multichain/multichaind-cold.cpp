@@ -19,6 +19,8 @@
 #include "multichain/multichain.h"
 #include "chainparams/globals.h"
 static bool fDaemon;
+int ACTIVATE_MINER;
+
 mc_EnterpriseFeatures* pEF = NULL;
 
 void DebugPrintClose();
@@ -160,7 +162,7 @@ bool AppInit(int argc, char* argv[])
     is_daemon=false;
 #ifndef WIN32
         fDaemon = GetBoolArg("-daemon", false);
-        
+        ACTIVATE_MINER = ( GetBoolArg("-minerless", false ) ? 0 : 1 ); 
         if (fDaemon)
         {
             delete mc_gState;                
