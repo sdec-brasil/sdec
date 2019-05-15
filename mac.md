@@ -95,4 +95,4 @@ In 'def install' => 'args =' change 'no-shared' to 'shared'
 
 ## Notes
 
-* This will build `multichaind`, `multichain-cli` and `multichain-util` in the `src` directory.
+* This will build `sdecd`, `sdec-cli` and `sdec-util` in the `src` directory.

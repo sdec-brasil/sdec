@@ -111,13 +111,13 @@ On Linux:
         ./configure --prefix=$(pwd)/depends/x86_64-w64-mingw32 --enable-cxx --disable-shared --enable-static --with-pic
         make
 
--   This will build `multichaind.exe`, `multichain-cli.exe` and `multitchain-util.exe` in the `src` directory[<sup>1</sup>](#f1).
--   Copy `src/multichaind.exe`, `src/multichain-cli.exe` and `src/multitchain-util.exe` to `%MULTICHAIN_HOME%\src` on Windows.
+-   This will build `sdecd.exe`, `sdec-cli.exe` and `sdec-util.exe` in the `src` directory[<sup>1</sup>](#f1).
+-   Copy `src/sdecd.exe`, `src/sdec-cli.exe` and `src/sdec-util.exe` to `%MULTICHAIN_HOME%\src` on Windows.
 
 On Windows:
 
         cd %MULTICHAIN_HOME%
-        src\multichaind.exe --help
+        src\sdecd.exe --help
 
 -   If all went well, you should see the expected help text from the program.
 

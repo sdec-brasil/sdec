@@ -5,10 +5,10 @@ src/bitcoin
 src/bitcoind
 src/bitcoin-cli
 src/bitcoin-tx
-src/multichain-cli
-src/multichain-util
-src/multichaind
-src/multichaind-cold
+src/sdec-cli
+src/sdec-util
+src/sdecd
+src/sdecd-cold
 src/multichain-cli-wdebug
 src/multichain-util-wdebug
 src/multichaind-wdebug

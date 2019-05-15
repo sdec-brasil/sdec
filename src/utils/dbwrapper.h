@@ -1,8 +1,8 @@
 // Copyright (c) 2014-2019 Coin Sciences Ltd
 // MultiChain code distributed under the GPLv3 license, see COPYING file.
 
-#ifndef MULTICHAINDB_H
-#define	MULTICHAINDB_H
+#ifndef SDECDB_H
+#define	SDECDB_H
 
 #define MC_DCT_DB_MAX_PATH                     1024
 
@@ -210,5 +210,5 @@ typedef struct mc_Database
 
 
 
-#endif	/* MULTICHAINDB_H */
+#endif	/* SDECDB_H */
 

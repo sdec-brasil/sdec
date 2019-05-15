@@ -38,10 +38,10 @@ std::string HelpMessageCli()
     strUsage += "  -?                       " + _("This help message") + "\n";
     strUsage += "  -conf=<file>             " + strprintf(_("Specify configuration file (default: %s)"), "multichain.conf") + "\n";
     strUsage += "  -datadir=<dir>           " + _("Specify data directory") + "\n";
-    strUsage += "  -cold                    " + _("Connect to multichaind-cold: use multichaind-cold default directory if -datadir is not set") + "\n";
+    strUsage += "  -cold                    " + _("Connect to sdecd-cold: use sdecd-cold default directory if -datadir is not set") + "\n";
 /* MCHN START */    
     strUsage += "  -requestout=<requestout> " + _("Send request to stderr, stdout or null (not print it at all), default stderr") + "\n"; 
-    strUsage += "  -saveclilog=<n>          " + _("If <n>=0 multichain-cli history is not saved, default 1") + "\n";
+    strUsage += "  -saveclilog=<n>          " + _("If <n>=0 sdecd-cli history is not saved, default 1") + "\n";
 /*    
     strUsage += "  -testnet               " + _("Use the test network") + "\n";
     strUsage += "  -regtest               " + _("Enter regression test mode, which uses a special chain in which blocks can be "
@@ -137,9 +137,9 @@ static int AppInitRPC(int argc, char* argv[])
         else
         {
             strUsage += "\n" + _("Usage:") + "\n" +
-                  "  multichain-cli <blockchain-name> [options] <command> [params]  " + _("Send command to MultiChain Core") + "\n" +
-                  "  multichain-cli <blockchain-name> [options] help                " + _("List commands") + "\n" +
-                  "  multichain-cli <blockchain-name> [options] help <command>      " + _("Get help for a command") + "\n";
+                  "  sdec-cli <blockchain-name> [options] <command> [params]  " + _("Send command to MultiChain Core") + "\n" +
+                  "  sdec-cli <blockchain-name> [options] help                " + _("List commands") + "\n" +
+                  "  sdec-cli <blockchain-name> [options] help <command>      " + _("Get help for a command") + "\n";
 
             strUsage += "\n" + HelpMessageCli();                                // MCHN-TODO Edit help message
         }
@@ -473,7 +473,7 @@ int main(int argc, char* argv[])
                 commandEnd=command+strlen(command);
                 offset=0;
                 argc_p=0;
-                strcpy(dest+offset,"multichain-cli");
+                strcpy(dest+offset,"sdec-cli");
                 argv_p[argc_p]=dest+offset;
                 argc_p++;
                 offset+=strlen(dest+offset)+1;

@@ -248,7 +248,7 @@ std::string HelpMessage_Cold()
     strUsage += "  -rpcsslciphers=<ciphers>                 " + strprintf(_("Acceptable ciphers (default: %s)"), "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH") + "\n";
 
     strUsage += "\n" + _("MultiChain runtime parameters") + "\n";    
-    strUsage += "  -initprivkey=<privkey>                   " + _("Manually set the wallet default address and private key when running multichaind for the first time.") + "\n";
+    strUsage += "  -initprivkey=<privkey>                   " + _("Manually set the wallet default address and private key when running sdecd for the first time.") + "\n";
     strUsage += "  -hideknownopdrops=<n>                    " + strprintf(_("Remove recognized MultiChain OP_DROP metadata from the responses to JSON_RPC calls (default: %u)"), 0) + "\n";
     strUsage += "  -shrinkdebugfilesize=<n>                 " + _("If shrinkdebugfile is 1, this controls the size of the debug file. Whenever the debug.log file reaches over 5 times this number of bytes, it is reduced back down to this size.") + "\n";
     
@@ -461,7 +461,7 @@ bool AppInit2_Cold(boost::thread_group& threadGroup,int OutputPipe)
                     bool allOK = env2.Salvage(strWalletFile, false, salvagedData);
                     if(!allOK)
                     {
-                        return InitError(_("wallet.dat corrupt, cannot upgrade, you should repair it first.\n Run multichaind normally or with -salvagewallet flag"));                    
+                        return InitError(_("wallet.dat corrupt, cannot upgrade, you should repair it first.\n Run sdecd normally or with -salvagewallet flag"));                    
                     }
 
                     currentwalletdatversion=3;
@@ -484,7 +484,7 @@ bool AppInit2_Cold(boost::thread_group& threadGroup,int OutputPipe)
             case 1:
                 return InitError(strprintf("Wallet version 1 is not supported in this version of MultiChain. "
                         "To upgrade to version 2, run MultiChain 1.0: \n"
-                        "multichaind %s -walletdbversion=2 -rescan\n",mc_gState->m_NetworkParams->Name()));                                        
+                        "sdecd %s -walletdbversion=2 -rescan\n",mc_gState->m_NetworkParams->Name()));                                        
             default:
                 return InitError(_("Invalid wallet version, possible values 2, 3.\n"));                                                                    
         }
@@ -604,7 +604,7 @@ bool AppInit2_Cold(boost::thread_group& threadGroup,int OutputPipe)
         mc_gState->m_Assets= new mc_AssetDB;
         if(mc_gState->m_Assets->Initialize(mc_gState->m_Params->NetworkName(),0))                                
         {
-            seed_error=strprintf("ERROR: Couldn't initialize asset database for blockchain %s. Please restart multichaind with reindex=1.\n",mc_gState->m_Params->NetworkName());
+            seed_error=strprintf("ERROR: Couldn't initialize asset database for blockchain %s. Please restart sdecd with reindex=1.\n",mc_gState->m_Params->NetworkName());
             return InitError(_(seed_error.c_str()));        
         }
         
@@ -674,7 +674,7 @@ bool AppInit2_Cold(boost::thread_group& threadGroup,int OutputPipe)
         {
             if(boost::filesystem::exists(pathWallet))
             {
-                return InitError(strprintf("Wallet was created in version 2 or higher. To switch to version 1, with worse performance and scalability, run: \nmultichaind %s -walletdbversion=1 -rescan\n",mc_gState->m_NetworkParams->Name()));                                        
+                return InitError(strprintf("Wallet was created in version 2 or higher. To switch to version 1, with worse performance and scalability, run: \nsdecd %s -walletdbversion=1 -rescan\n",mc_gState->m_NetworkParams->Name()));                                        
             }
         }
         else
@@ -689,7 +689,7 @@ bool AppInit2_Cold(boost::thread_group& threadGroup,int OutputPipe)
                     }
                     if(mc_gState->m_WalletMode != MC_WMD_NONE)
                     {
-                        return InitError(strprintf("Wallet was created in version 1. To switch to version %d, with better performance and scalability, run: \nmultichaind %s -walletdbversion=%d -rescan\n",
+                        return InitError(strprintf("Wallet was created in version 1. To switch to version %d, with better performance and scalability, run: \nsdecd %s -walletdbversion=%d -rescan\n",
                                 MC_TDB_WALLET_VERSION,mc_gState->m_NetworkParams->Name(),MC_TDB_WALLET_VERSION));                                        
                     }                    
                 }
@@ -733,7 +733,7 @@ bool AppInit2_Cold(boost::thread_group& threadGroup,int OutputPipe)
 
                 if(pwalletTxsMain->Initialize(mc_gState->m_NetworkParams->Name(),mc_gState->m_WalletMode))
                 {
-                    return InitError("Wallet tx database corrupted. Please restart multichaind with -rescan\n");                        
+                    return InitError("Wallet tx database corrupted. Please restart decd with -rescan\n");                        
                 }
 
                 if(mc_gState->m_WalletMode & MC_WMD_AUTO)
@@ -759,12 +759,12 @@ bool AppInit2_Cold(boost::thread_group& threadGroup,int OutputPipe)
                 
                 if((pwalletTxsMain->m_Database->m_DBStat.m_WalletVersion) != wallet_mode)
                 {
-                    return InitError(strprintf("Wallet tx database was created with different wallet version (%d). Please restart multichaind with reindex=1 \n",pwalletTxsMain->m_Database->m_DBStat.m_WalletVersion));                        
+                    return InitError(strprintf("Wallet tx database was created with different wallet version (%d). Please restart sdecd with reindex=1 \n",pwalletTxsMain->m_Database->m_DBStat.m_WalletVersion));                        
                 }        
 
                 if((pwalletTxsMain->m_Database->m_DBStat.m_InitMode & MC_WMD_MODE_MASK) != (mc_gState->m_WalletMode & MC_WMD_MODE_MASK))
                 {
-                    return InitError(strprintf("Wallet tx database was created in different mode (%08X). Please restart multichaind with reindex=1 \n",pwalletTxsMain->m_Database->m_DBStat.m_InitMode));                        
+                    return InitError(strprintf("Wallet tx database was created in different mode (%08X). Please restart sdecd with reindex=1 \n",pwalletTxsMain->m_Database->m_DBStat.m_InitMode));                        
                 }        
             }
         }
@@ -1126,7 +1126,7 @@ bool AppInit2_Cold(boost::thread_group& threadGroup,int OutputPipe)
             if (!fReset) {
 /* MCHN START */                
                 bool fRet = uiInterface.ThreadSafeMessageBox(
-                    strLoadError + ".\n\n" + _("Please restart multichaind with reindex=1."),
+                    strLoadError + ".\n\n" + _("Please restart sdecd with reindex=1."),
                     "", CClientUIInterface::BTN_ABORT);
                 
 /* MCHN END */                
