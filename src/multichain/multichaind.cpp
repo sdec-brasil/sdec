@@ -22,8 +22,6 @@
 
 static bool fDaemon;
 
-int ACTIVATE_MINER = 0; // default value = false
-
 mc_EnterpriseFeatures* pEF = NULL;
 
 void DebugPrintClose();
@@ -181,9 +179,6 @@ bool AppInit(int argc, char* argv[])
 #ifndef WIN32
         fDaemon = GetBoolArg("-daemon", false);
 
-        ACTIVATE_MINER = ( GetBoolArg("-minerless", false ) ? 0 : 1 ); 
-        if( ACTIVATE_MINER == 0 ) fprintf(stdout, "ACTIVATE_MINER esta com valor de falso");
-        else fprintf(stdout, "ACTIVATE_MINER esta com valor de verdadeiro"); 
 
         if (fDaemon)
         {

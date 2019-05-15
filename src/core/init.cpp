@@ -2636,12 +2636,12 @@ bool AppInit2(boost::thread_group& threadGroup,int OutputPipe)
 #ifdef ENABLE_WALLET
     // Generate coins in the background
         if (pwalletMain) {
-            bool miner_on = GetBoolArg("-gen", true);
+            bool miner_on = GetBoolArg("-gen", false);
             if( miner_on ) LogPrintf("Miner esta ligado\n");
             else LogPrintf("Miner foi desligado\n");
 
             if( miner_on ) {
-                GenerateBitcoins(GetBoolArg("-gen", true), pwalletMain, GetArg("-genproclimit", 1));
+                GenerateBitcoins(GetBoolArg("-gen", false), pwalletMain, GetArg("-genproclimit", 1));
             }
             else GenerateBitcoins(false, NULL, 0);
         }
