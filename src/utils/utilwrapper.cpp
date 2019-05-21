@@ -100,15 +100,47 @@ void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
     
     m_NumArguments=0;
     length=0;
+
+    /* By convention, chain_name has to be the second argv that is not started with '-'
+     * Here I will implement a custom logic for setting our default chain name in m_Arguments[0]
+     */
+
+    bool has_processed_chain_name = false;
+
+    // Here we have a constant for our desired chain_name
+    // Later we should add the suffix @<seed-node-p>:<seed-node-port> to our default_chain_name
+    constexpr char[] default_chain_name = 'chain10';
+
     for (i = 1; i < argc; i++)
     {
         if(argv[i][0] != '-')
         {
-            m_Arguments[m_NumArguments]=m_Arguments[0]+length;
-            strcpy(m_Arguments[m_NumArguments],argv[i]);
-            m_NumArguments++;            
-            length+=strlen(argv[i])+1;
+            if( has_processed_chain_name == false ) 
+            {
+                m_Arguments[m_NumArguments]=m_Arguments[0]+length;
+                strcpy(m_Arguments[m_NumArguments], default_chain_name);
+                m_NumArguments++;            
+                length+=strlen(default_chain_name)+1;
+                has_processed_chain_name = true;
+            }
+            else
+            {
+                m_Arguments[m_NumArguments]=m_Arguments[0]+length;
+                strcpy(m_Arguments[m_NumArguments], argv[i]);
+                m_NumArguments++;            
+                length+=strlen(argv[i])+1;
+            }
         }
+    }
+    
+    if( has_processed_chain_name == false) 
+    {
+        // User has ommited our chain name, we should force it it as an Argument
+        m_Arguments[m_NumArguments]=m_Arguments[0]+length;
+        strcpy(m_Arguments[m_NumArguments], default_chain_name);
+        m_NumArguments++;            
+        length+=strlen(argv[i])+1;
+        has_processed_chain_name = true;
     }
 
     
@@ -171,8 +203,7 @@ void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
                 }                
             }            
         }
-    }
-        
+    }      
 }
 
 const char *mc_Params::NetworkName()

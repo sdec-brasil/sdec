@@ -79,12 +79,21 @@ public:
 
 };
 
+// In this helper function, we are assuming that every parameter that starts with '-' is a flag and cannot be chain_name
+bool is_flag(char* arg)
+{
+    if( arg == NULL ) return false;
+    char* cpy = arg;
+    if(*cpy == '-') return true;
+    return false;
+}
 //
 // This function returns either one of EXIT_ codes when it's expected to stop the process or
 // CONTINUE_EXECUTION when it's expected to continue further.
 //
 static int AppInitRPC(int argc, char* argv[])
 {
+    //char default_string_name[] = "sdec-chain"; // Depois vamos querer botar o IP aqui, quando tivermos um ip fixo e sempre up
     //
     // Parameters
     //
@@ -94,7 +103,24 @@ static int AppInitRPC(int argc, char* argv[])
 #ifndef WIN32
     minargs=1;
 #endif
-    
+    // Vou lançar uma build primeiro imprimindo o que a funcao ParseParameters recebe,
+    // Antes de fazer a mudanca de parametros in_place
+
+    /*char* new_argv[] = malloc( (argc + 1) * sizeof * new_argv);
+
+    // Assumindo que nesse caso, o nome do executavel nao foi recebido como parametro 0.
+    if( minargs == 1 )
+    {
+        for(int i = 0; i < argc; ++i)
+        {
+            if( i == 0 && is_flag(argv[i])
+        }
+    }
+    else( minargs == 2 )
+    {
+
+    }*/
+
     //
     // Parameters
     //
@@ -121,7 +147,7 @@ static int AppInitRPC(int argc, char* argv[])
     }
     
     ParseParameters(argc, argv); // For running multichain without built-in miner -> ./multichaind chainName -gen=0 -daemon
-    
+
     if (mc_gState->m_Params->HasOption("-?") || 
     mc_gState->m_Params->HasOption("-help") || 
     mc_gState->m_Params->HasOption("-version") || 
