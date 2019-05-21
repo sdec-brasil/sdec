@@ -300,10 +300,19 @@ void ParseParameters(int argc, const char* const argv[])
     mapArgs.clear();
     mapMultiArgs.clear();
 
+    LogPrintf("Funcao ParseParameters foi chamada\n");
+    for(int i = 0; i < argc; ++i)
+    {
+        LogPrintf("Parametro %d recebido = %s\n", i, argv[i]);
+    }
+
+    LogPrintf("ParseParameters vai aplicar transformacoes em alguns dos parametros\n\n");
+
     for (int i = 1; i < argc; i++)
     {
         std::string str(argv[i]);
         std::string strValue;
+        LogPrintf("Parametro antes = %s\n", argv[i]);
         size_t is_index = str.find('=');
         if (is_index != std::string::npos)
         {
@@ -323,7 +332,7 @@ void ParseParameters(int argc, const char* const argv[])
         if (str[0] != '-')
             break;
 */
-
+        LogPrintf("Parametro depois = %s\n\n", str.c_str());
         if (str[0] == '-')
         {
             // Interpret --foo as -foo.
@@ -346,6 +355,8 @@ void ParseParameters(int argc, const char* const argv[])
         // interpret -nofoo as -foo=0 (and -nofoo=0 as -foo=1) as long as -foo not set
         InterpretNegativeSetting(entry.first, mapArgs);
     }
+
+    LogPrintf("Fim da ParseParameters\n");
 }
 
 std::string GetArg(const std::string& strArg, const std::string& strDefault)
