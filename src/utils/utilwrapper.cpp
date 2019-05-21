@@ -139,7 +139,7 @@ void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
         m_Arguments[m_NumArguments]=m_Arguments[0]+length;
         strcpy(m_Arguments[m_NumArguments], default_chain_name);
         m_NumArguments++;            
-        length+=strlen(argv[i])+1;
+        length+=strlen(default_chain_name)+1;
         has_processed_chain_name = true;
     }
 
