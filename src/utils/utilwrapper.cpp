@@ -75,6 +75,9 @@ const boost::filesystem::path mc_GetLogDir(const char *network_name,int create);
 
 void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
 {
+    
+    constexpr char default_chain_name[] = "chain10";
+
     int i,length;
     ParseParameters(argc,argv);
     mc_ExpandDataDirParam();
@@ -83,13 +86,22 @@ void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
     
     m_NumArguments=0;
     length=MC_DCT_SEED_NODE_MAX_SIZE+1;
+    
     for (i = 1; i < argc; i++)
     {
         if(argv[i][0] != '-')
         {
             m_NumArguments++;
-            length+=strlen(argv[i])+1;
+            if( m_NumArguments == 1 ) length += strlen(default_chain_name) + 1;
+            else length += strlen(argv[i]) + 1;
         }
+    }
+    
+    // Handling the case where chain_name has been omitted. ( ./multichaind -daemon )
+    if( m_NumArguments == 0 ) 
+    {
+        length += strlen( default_chain_name ) + 1; 
+        m_NumArguments++;
     }
     
     if(m_NumArguments)
@@ -105,17 +117,15 @@ void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
      * Here I will implement a custom logic for setting our default chain name in m_Arguments[0]
      */
 
-    bool has_processed_chain_name = false;
 
     // Here we have a constant for our desired chain_name
     // Later we should add the suffix @<seed-node-p>:<seed-node-port> to our default_chain_name
-    constexpr char default_chain_name[] = "chain10";
 
     for (i = 1; i < argc; i++)
     {
         if(argv[i][0] != '-')
         {
-            if( has_processed_chain_name == false ) 
+            if( m_NumArguments == 0 ) 
             {
                 m_Arguments[m_NumArguments]=m_Arguments[0]+length;
                 strcpy(m_Arguments[m_NumArguments], default_chain_name);
@@ -128,19 +138,18 @@ void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
                 m_Arguments[m_NumArguments]=m_Arguments[0]+length;
                 strcpy(m_Arguments[m_NumArguments], argv[i]);
                 m_NumArguments++;            
-                length+=strlen(argv[i])+1;
+                length += strlen(argv[i]) + 1;
             }
         }
     }
     
-    if( has_processed_chain_name == false) 
+    if( m_NumArguments == 0) 
     {
         // User has ommited our chain name, we should force it it as an Argument
         m_Arguments[m_NumArguments]=m_Arguments[0]+length;
         strcpy(m_Arguments[m_NumArguments], default_chain_name);
         m_NumArguments++;            
-        length+=strlen(default_chain_name)+1;
-        has_processed_chain_name = true;
+        length += strlen(default_chain_name) + 1;
     }
 
     
@@ -206,6 +215,154 @@ void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
     }      
 }
 
+// Versao especial feita para ser chamada com ./multichain-util
+/* A necessidade de criar uma funcao Parse especial para ser chamada no ./multichain-util
+ * existe, pois ele não segue a convenção do ./multichaind chain_name ...
+ * Ele é chamado da forma ./multichain-util create/clone chain_name..
+ */
+void mc_Params::Parse_Util_Version(int argc, const char* const argv[],int exe_type)
+{
+    
+    constexpr char default_chain_name[] = "chain10";
+
+    int i,length;
+    ParseParameters(argc,argv);
+    mc_ExpandDataDirParam();
+    
+    custom_set_runtime_defaults(exe_type);
+    
+    m_NumArguments=0;
+    length=MC_DCT_SEED_NODE_MAX_SIZE+1;
+    
+
+    for (i = 1; i < argc; i++)
+    {
+        if(argv[i][0] != '-')
+        {
+            m_NumArguments++;
+            if( m_NumArguments == 2 ) length += strlen( default_chain_name ) + 1;
+            else length += strlen( argv[i]) + 1;
+        }
+    }
+    
+    // Handling the case where chain_name has not been provided by user 
+    if( m_NumArguments == 1) 
+    {
+        length += strlen( default_chain_name ) + 1; 
+        m_NumArguments++;
+    }
+    
+    if(m_NumArguments)
+    {
+        m_Arguments=(char**)mc_New((m_NumArguments+1)*sizeof(char*));
+        m_Arguments[0]=(char*)mc_New(length);
+    }
+    
+    m_NumArguments=0;
+    length=0;
+
+    /* By convention, chain_name has to be the second argv that is not started with '-'
+     * Here I will implement a custom logic for setting our default chain name in m_Arguments[0]
+     */
+
+    // Here we have a constant for our desired chain_name
+    // Later we should add the suffix @<seed-node-p>:<seed-node-port> to our default_chain_name
+
+    for (i = 1; i < argc; i++)
+    {
+        if(argv[i][0] != '-')
+        {
+            if( m_NumArguments == 1) 
+            {
+                m_Arguments[m_NumArguments]=m_Arguments[0]+length;
+                strcpy(m_Arguments[m_NumArguments], default_chain_name);
+                m_NumArguments++;            
+                length+=strlen(default_chain_name)+1;
+            }
+            else
+            {
+                m_Arguments[m_NumArguments]=m_Arguments[0]+length;
+                strcpy(m_Arguments[m_NumArguments], argv[i]);
+                m_NumArguments++;            
+                length+=strlen(argv[i])+1;
+            }
+        }
+    }
+    
+    // m_NumArguments vai ser == 1, se ele tiver chamado ./multichain-util create , sem passar nenhum chainName..
+    // Nesse caso temos que inserir o nome da chain default como segundo argumento 
+    
+    if( m_NumArguments == 1 ) 
+    {
+        // User has ommited our chain name, we should force it it as an Argument
+        m_Arguments[m_NumArguments]=m_Arguments[0]+length;
+        strcpy(m_Arguments[m_NumArguments], default_chain_name);
+        m_NumArguments++;            
+        length+=strlen(default_chain_name)+1;
+    }
+
+    
+    
+    if(m_NumArguments)
+    {
+        if( exe_type == MC_ETP_UTIL )
+        {
+            m_FirstArgumentType=MC_FAT_COMMAND;
+        }
+        else
+        {
+            if( (exe_type == MC_ETP_CLI) || (exe_type == MC_ETP_DAEMON) ) 
+            {
+                m_FirstArgumentType=MC_FAT_NETWORK;                
+                for(i=0;i<(int)strlen(m_Arguments[0]);i++)
+                {
+                    if(m_FirstArgumentType == MC_FAT_NETWORK)
+                    {
+                        if(m_Arguments[0][i] == '@')
+                        {
+                            m_FirstArgumentType=MC_FAT_NETWORKSEED;
+                            m_Arguments[0][i]=0x00;
+                        }
+                    }
+                }
+                if((m_FirstArgumentType == MC_FAT_NETWORK) && (exe_type == MC_ETP_DAEMON) )
+                {
+                    m_Arguments[m_NumArguments]=m_Arguments[0]+length;
+                    m_Arguments[m_NumArguments][0]=0x00;
+                    length++;
+
+                    mc_MapStringString *mapConfig;
+                    int err;
+                    const char *seed_node;
+
+                    if(!GetBoolArg("-addnodeonly",false))
+                    {
+                        mapConfig=new mc_MapStringString;
+
+                        err=mc_ReadGeneralConfigFile(mapConfig,mc_gState->m_Params->NetworkName(),"seed",".dat");
+
+                        if(err == MC_ERR_NOERROR)
+                        {
+                            seed_node=mapConfig->Get("seed");
+
+                            if(seed_node)
+                            {
+                                if(strlen(seed_node) <= MC_DCT_SEED_NODE_MAX_SIZE)
+                                {
+                                    strcpy(m_Arguments[m_NumArguments],seed_node);
+                                    length+=strlen(seed_node);
+                                }
+                            }
+                        }
+
+                        delete mapConfig;                            
+                    }
+                    m_NumArguments++;                                                                
+                }                
+            }            
+        }
+    }      
+}
 const char *mc_Params::NetworkName()
 {
     if((m_FirstArgumentType == MC_FAT_NETWORK) || (m_FirstArgumentType == MC_FAT_NETWORKSEED))
