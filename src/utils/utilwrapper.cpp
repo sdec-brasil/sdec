@@ -131,7 +131,6 @@ void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
                 strcpy(m_Arguments[m_NumArguments], default_chain_name);
                 m_NumArguments++;            
                 length+=strlen(default_chain_name)+1;
-                has_processed_chain_name = true;
             }
             else
             {
@@ -363,6 +362,7 @@ void mc_Params::Parse_Util_Version(int argc, const char* const argv[],int exe_ty
         }
     }      
 }
+
 const char *mc_Params::NetworkName()
 {
     if((m_FirstArgumentType == MC_FAT_NETWORK) || (m_FirstArgumentType == MC_FAT_NETWORKSEED))

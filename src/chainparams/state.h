@@ -100,6 +100,7 @@ typedef struct mc_Params
     }
     
     void Parse(int argc, const char* const argv[], int exe_type);
+    void Parse_Util_Version(int argc, const char* const argv[], int exe_type); 
     int ReadConfig(const char *network_name);
     const char* GetOption(const char* strArg,const char* strDefault);
     int64_t GetOption(const char* strArg,int64_t nDefault);
