@@ -109,7 +109,7 @@ void mc_Params::Parse(int argc, const char* const argv[],int exe_type)
 
     // Here we have a constant for our desired chain_name
     // Later we should add the suffix @<seed-node-p>:<seed-node-port> to our default_chain_name
-    constexpr char[] default_chain_name = 'chain10';
+    constexpr char default_chain_name[] = 'chain10';
 
     for (i = 1; i < argc; i++)
     {
