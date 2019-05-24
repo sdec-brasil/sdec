@@ -518,7 +518,7 @@ sdecd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_
 sdecd_CPPFLAGS = $(BITCOIN_INCLUDES) $(V8_INCLUDE)
 sdecd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) -pthread
 if !TARGET_WINDOWS
-multichaind_LDFLAGS += $(V8_LIBS)
+sdecd_LDFLAGS += $(V8_LIBS)
 endif
 
 # multichaind-cold binary #
