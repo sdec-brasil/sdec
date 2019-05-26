@@ -78,10 +78,10 @@ jobs:
       script:
         # tiny test
         - mkdir /tmp/mc-test
-        - ./src/multichain-util create test 20006 -datadir=/tmp/mc-test -rpcpassword=rpcpass
-        - ./src/multichaind test 20006 -daemon -datadir=/tmp/mc-test -pid=/tmp/mc-test/test/multichain.pid
-        - ./src/multichain-cli test -datadir=/tmp/mc-test getblockchaininfo
-        - ./src/multichain-cli test -datadir=/tmp/mc-test stop
+        - ./src/sdec-util create test 20006 -datadir=/tmp/mc-test -rpcpassword=rpcpass
+        - ./src/sdecd test 20006 -daemon -datadir=/tmp/mc-test -pid=/tmp/mc-test/test/multichain.pid
+        - ./src/sdec-cli test -datadir=/tmp/mc-test getblockchaininfo
+        - ./src/sdec-cli test -datadir=/tmp/mc-test stop
 
       after_success:
         # get the upstream so we can figure out how far behind we are
@@ -110,10 +110,10 @@ jobs:
         - echo "https://github.com/sdec-brasil/multichain/tree/${LAST_UPSTREAM_COMMIT_HASH}" >> ${RELEASE_DIR}/README
 
         # copy binaries
-        - cp ./src/multichain-cli ${RELEASE_DIR}
-        - cp ./src/multichain-util ${RELEASE_DIR}
-        - cp ./src/multichaind ${RELEASE_DIR}
-        - cp ./src/multichaind-cold ${RELEASE_DIR}
+        - cp ./src/sdec-cli ${RELEASE_DIR}
+        - cp ./src/sdec-util ${RELEASE_DIR}
+        - cp ./src/sdecd ${RELEASE_DIR}
+        - cp ./src/sdecd-cold ${RELEASE_DIR}
 
         # name and build the archive
         - LAST_UPSTREAM_COMMIT_HASH_SHORT=$(git show $LAST_UPSTREAM_COMMIT_HASH --format=%h --no-patch)
