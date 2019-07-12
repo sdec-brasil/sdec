@@ -150,13 +150,7 @@ public:
             }
         }            
         size_t nSize = GetSerializeSize(SER_DISK,0)+148u;
-        // We should not end up here when running SDEC
-        //return 3*minRelayTxFee.GetFee(nSize);        
-        //
-        
-        // Unique-fee start
-        return 0;
-        // Unique-fee end
+        return 3*minRelayTxFee.GetFee(nSize);        
     }
 /* MCHN END */        
     
