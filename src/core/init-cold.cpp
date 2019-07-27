@@ -9,6 +9,7 @@
 #endif
 
 #include "core/init.h"
+
 #include "storage/addrman.h"
 #include "structs/amount.h"
 #include "chain/checkpoints.h"

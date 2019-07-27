@@ -323,14 +323,12 @@ void ParseParameters(int argc, const char* const argv[])
         if (str[0] != '-')
             break;
 */
-
         if (str[0] == '-')
         {
             // Interpret --foo as -foo.
             // If both --foo and -foo are set, the last takes effect.
             if (str.length() > 1 && str[1] == '-')
                 str = str.substr(1);
-
             mapArgs[str] = strValue;
             mapMultiArgs[str].push_back(strValue);
         }

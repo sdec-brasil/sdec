@@ -9,6 +9,7 @@
 #endif
 
 #include "core/init.h"
+
 #include "storage/addrman.h"
 #include "structs/amount.h"
 #include "chain/checkpoints.h"
@@ -2635,19 +2636,8 @@ bool AppInit2(boost::thread_group& threadGroup,int OutputPipe)
 
 #ifdef ENABLE_WALLET
     // Generate coins in the background
-        if (pwalletMain) {
-            bool miner_on = GetBoolArg("-gen", false);
-            if( miner_on ) LogPrintf("Miner esta ligado\n");
-            else LogPrintf("Miner foi desligado\n");
-
-            if( miner_on ) {
-                GenerateBitcoins(GetBoolArg("-gen", false), pwalletMain, GetArg("-genproclimit", 1));
-            }
-            else GenerateBitcoins(false, NULL, 0);
-        }
-        else GenerateBitcoins(false, NULL, 0);
-        
-
+        if (pwalletMain)
+            GenerateBitcoins(GetBoolArg("-gen", true), pwalletMain, GetArg("-genproclimit", 1));
 #endif
 
     // ********************************************************* Step 11: finished

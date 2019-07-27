@@ -120,14 +120,13 @@ static int AppInitRPC(int argc, char* argv[])
         }
     }
     
-    ParseParameters(argc, argv); // For running multichain without built-in miner -> ./multichaind chainName -gen=0 -daemon
-    
-    if (mc_gState->m_Params->HasOption("-?") || 
-    mc_gState->m_Params->HasOption("-help") || 
-    mc_gState->m_Params->HasOption("-version") || 
-    (mc_gState->m_Params->NetworkName() == NULL) ||
-    mc_gState->m_Params->m_NumArguments<minargs)
-    {
+//    ParseParameters(argc, argv);
+      if (mc_gState->m_Params->HasOption("-?") || 
+        mc_gState->m_Params->HasOption("-help") || 
+        mc_gState->m_Params->HasOption("-version") || 
+        (mc_gState->m_Params->NetworkName() == NULL) ||
+        mc_gState->m_Params->m_NumArguments<minargs)
+      {
         fprintf(stdout,"\nMultiChain %s RPC client\n\n",mc_BuildDescription(mc_gState->GetNumericVersion()).c_str());
         
         std::string strUsage = "";
