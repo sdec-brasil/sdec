@@ -43,9 +43,10 @@ jobs:
             - openssl
             - pkg-config
             - python
-            - rename
 
       install:
+        # forcing rename to be installed
+        - brew install rename
         # uninstall pre-installed boost and use 1.57
         - brew uninstall --ignore-dependencies boost
         - brew install boost@1.57
