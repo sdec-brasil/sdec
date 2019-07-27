@@ -43,7 +43,7 @@ Prepare to download or build V8
 -------------------
 
     cd multichain
-    set MULTICHAIN_HOME=$(pwd)
+    export MULTICHAIN_HOME=$(pwd) (you can try set MULTICHAIN_HOME=$(pwd) as well, check using echo $MULTICHAIN_HOME
     mkdir v8build
     cd v8build
     
