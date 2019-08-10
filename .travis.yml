@@ -83,7 +83,7 @@ jobs:
 
       after_success:
         # get the upstream so we can figure out how far behind we are
-        - git remote add upstream https://github.com/sdec-brasil/multichain.git
+        - git remote add upstream https://github.com/sdec-brasil/sdec.git
         - git fetch upstream
 
         # number of commits that have occurred since we last merged
@@ -99,13 +99,13 @@ jobs:
 
       before_deploy:
         # release directory
-        - RELEASE_DIR=./multichain-${TRAVIS_BRANCH}
+        - RELEASE_DIR=./sdec-${TRAVIS_BRANCH}
         - mkdir ${RELEASE_DIR}
 
         # generate small README
         - LAST_UPSTREAM_COMMIT_INFO=$(git show ${LAST_UPSTREAM_COMMIT_HASH} --format=oneline --no-patch)
         - echo "Build of ${TRAVIS_BRANCH} at ${LAST_UPSTREAM_COMMIT_INFO} (${LAST_UPSTREAM_COMMIT_DATE_ISO})" > ${RELEASE_DIR}/README
-        - echo "https://github.com/sdec-brasil/multichain/tree/${LAST_UPSTREAM_COMMIT_HASH}" >> ${RELEASE_DIR}/README
+        - echo "https://github.com/sdec-brasil/sdec/tree/${LAST_UPSTREAM_COMMIT_HASH}" >> ${RELEASE_DIR}/README
 
         # copy binaries
         - cp ./src/sdec-cli ${RELEASE_DIR}
@@ -115,7 +115,7 @@ jobs:
 
         # name and build the archive
         - LAST_UPSTREAM_COMMIT_HASH_SHORT=$(git show $LAST_UPSTREAM_COMMIT_HASH --format=%h --no-patch)
-        - RELEASE_ARCHIVE=./multichain-${TRAVIS_BRANCH}-${LAST_UPSTREAM_COMMIT_HASH_SHORT}-${TRAVIS_OS_NAME}.tar.gz
+        - RELEASE_ARCHIVE=./sdec-${TRAVIS_BRANCH}-${LAST_UPSTREAM_COMMIT_HASH_SHORT}-${TRAVIS_OS_NAME}.tar.gz
         - tar czf ${RELEASE_ARCHIVE} ${RELEASE_DIR}
 
         # create checksums for archive
@@ -129,7 +129,7 @@ jobs:
 
       deploy:
         name: "${TRAVIS_BRANCH} at ${LAST_UPSTREAM_COMMIT_HASH_SHORT}"
-        body: "Build of https://github.com/sdec-brasil/multichain/tree/${LAST_UPSTREAM_COMMIT_HASH_SHORT} (build log available at ${TRAVIS_BUILD_WEB_URL})"
+        body: "Build of https://github.com/sdec-brasil/sdec/tree/${LAST_UPSTREAM_COMMIT_HASH_SHORT} (build log available at ${TRAVIS_BUILD_WEB_URL})"
         # deploy as GitHub release
         provider: releases
         # unencrypted GitHub OAuth token, generated using `travis setup releases` and set in Travis settings
