@@ -34,7 +34,6 @@ jobs:
             - autoconf
             - automake
             - boost
-            - berkeley-db4
             - libtool
             - nasm
             - openssl
@@ -49,6 +48,7 @@ jobs:
         - brew install boost@1.57
         - brew link boost@1.57 --force
         
+        - brew install berkeley-db4
         - brew link berkeley-db4 --force
 
         # reinstall python, for some reason the default installation errors on importing hashlib
