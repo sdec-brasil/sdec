@@ -15,9 +15,6 @@ cache:
     - ./v8build
     - $HOME/Library/Caches/Homebrew
 
-before_cache:
-  - brew cleanup
-
 jobs:
   include:
     - stage: fetch-v8
