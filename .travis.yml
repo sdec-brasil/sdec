@@ -48,6 +48,8 @@ jobs:
         - brew uninstall --ignore-dependencies boost
         - brew install boost@1.57
         - brew link boost@1.57 --force
+        
+        - brew link berkeley-db4 --force
 
         # reinstall python, for some reason the default installation errors on importing hashlib
         - brew uninstall --ignore-dependencies python@2
