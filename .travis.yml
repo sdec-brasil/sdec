@@ -75,14 +75,6 @@ jobs:
         - ./configure --with-gui=no --with-libs=no --with-miniupnpc=no --with-boost=/usr/local/opt/boost\@1.57
         - make -j2
 
-      script:
-        # tiny test
-        - mkdir /tmp/mc-test
-        - ./src/sdec-util create test 20006 -datadir=/tmp/mc-test -rpcpassword=rpcpass
-        - ./src/sdecd test 20006 -daemon -datadir=/tmp/mc-test -pid=/tmp/mc-test/test/multichain.pid
-        - ./src/sdec-cli test -datadir=/tmp/mc-test getblockchaininfo
-        - ./src/sdec-cli test -datadir=/tmp/mc-test stop
-
       after_success:
         # get the upstream so we can figure out how far behind we are
         - git remote add upstream https://github.com/sdec-brasil/sdec.git
