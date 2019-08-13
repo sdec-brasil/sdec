@@ -218,6 +218,9 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "appendrawexchange",      &appendrawexchange,      false,     false,      true },
     { "wallet",             "completerawexchange",    &completerawexchange,    false,     false,      true },
     { "wallet",             "decoderawexchange",      &decoderawexchange,      false,     false,      true },
+
+/* SDEC START */
+    { "wallet",             "newcompany",             &newcompany,             false,     false,      true },
     
     { "wallet",             "grantfrom",              &grantfromcmd,           false,     false,      true }, 
     { "wallet",             "approvefrom",            &approvefrom,            false,     false,      true }, 

@@ -355,7 +355,17 @@ exitlbl:
     return wtx.GetHash().GetHex();    
 }
  
+Value newcompany(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3)
+        throw runtime_error("Help message not found\n");
+    
+    BOOST_FOREACH(const Value& value, params)
+    {
+        cout << value.get_str() <<endl;
+    }
 
+}
 
 Value issuecmd(const Array& params, bool fHelp)
 {
