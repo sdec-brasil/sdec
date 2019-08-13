@@ -40,6 +40,11 @@ Value issuefromcmd(const Array& params, bool fHelp)
     if (fHelp || params.size() < 4)
         throw runtime_error("Help message not found\n");
 
+    BOOST_FOREACH(const Value& value, params)
+    {
+        cout << value.get_str() <<endl;
+    }
+
     CBitcoinAddress address(params[1].get_str());
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
