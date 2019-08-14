@@ -375,7 +375,7 @@ Value newcompany(const Array& params, bool fHelp)
     issue_params.push_back(0);
     issue_params.push_back(1);
     issue_params.push_back(0);
-    issue_params.push_back(params[2]);
+    issue_params.push_back(&params[2]);
 
     issuecmd(issue_params, fHelp);
 
