@@ -369,7 +369,7 @@ Value newcompany(const Array& params, bool fHelp)
     Object asset_params;
     asset_params.push_back(Pair("name", params[1].get_str()));
     asset_params.push_back(Pair("open", true));
-    asset_params.push_back(Pair("restrict", "send, receive"));
+    asset_params.push_back(Pair("restrict", "send,receive"));
 
     issue_params.push_back(asset_params);
     issue_params.push_back(0);
