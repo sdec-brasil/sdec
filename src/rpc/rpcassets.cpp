@@ -372,7 +372,7 @@ Value newcompany(const Array& params, bool fHelp)
     issue_params.push_back(&params[0].get_str());
 
     Object asset_params;
-    asset_params.push_back(Pair("name", &params[1].get_str()));
+    asset_params.push_back(Pair("name", params[1].get_value());
     asset_params.push_back(Pair("open", true));
     asset_params.push_back(Pair("restrict", "send,receive"));
 
@@ -380,14 +380,14 @@ Value newcompany(const Array& params, bool fHelp)
     issue_params.push_back(0);
     issue_params.push_back(1);
     issue_params.push_back(0);
-    issue_params.push_back(&params[2]);
+    issue_params.push_back(params[2].get_value());
 
     issuecmd(issue_params, fHelp);
 
     Array grant_params;
-    grant_params.push_back(&params[0].get_str());
+    grant_params.push_back(params[0].get_value());
 
-    std::string asset_activate = params[1].get_str();
+    std::string asset_activate = params[1].get_value();
     asset_activate.append(".activate");
     
     grant_params.push_back(asset_activate);
