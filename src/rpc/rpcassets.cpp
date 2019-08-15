@@ -40,6 +40,11 @@ Value issuefromcmd(const Array& params, bool fHelp)
     if (fHelp || params.size() < 4)
         throw runtime_error("Help message not found\n");
 
+    BOOST_FOREACH(const Value& value, params)
+    {
+        cout << value.get_str() << endl;
+    }
+
     CBitcoinAddress address(params[1].get_str());
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
@@ -364,14 +369,14 @@ Value newcompany(const Array& params, bool fHelp)
         throw runtime_error("Help message not found\n");
 
     Array issue_params;
-    issue_params.push_back(params[0].get_str());
+    issue_params.push_back(&params[0].get_str());
 
     Object asset_params;
-    asset_params.push_back(Pair("name", params[1].get_str()));
+    asset_params.push_back(Pair("name", &params[1].get_str()));
     asset_params.push_back(Pair("open", true));
     asset_params.push_back(Pair("restrict", "send,receive"));
 
-    issue_params.push_back(asset_params);
+    issue_params.push_back(&asset_params);
     issue_params.push_back(0);
     issue_params.push_back(1);
     issue_params.push_back(0);
@@ -380,7 +385,7 @@ Value newcompany(const Array& params, bool fHelp)
     issuecmd(issue_params, fHelp);
 
     Array grant_params;
-    grant_params.push_back(params[0].get_str());
+    grant_params.push_back(&params[0].get_str());
 
     std::string asset_activate = params[1].get_str();
     asset_activate.append(".activate");
