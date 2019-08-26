@@ -385,8 +385,8 @@ Value newcompany(const Array& params, bool fHelp)
 
     issue_params.push_back(value);
 
-    issuecmd(issue_params, fHelp);
-
+    return issuecmd(issue_params, fHelp);
+    /*
     Array grant_params;
     grant_params.push_back(&params[0].get_str());
 
@@ -395,7 +395,7 @@ Value newcompany(const Array& params, bool fHelp)
     
     grant_params.push_back(asset_activate);
 
-    return grantcmd(grant_params, fHelp);
+    return grantcmd(grant_params, fHelp); */
 }
 
 Value issuecmd(const Array& params, bool fHelp)
