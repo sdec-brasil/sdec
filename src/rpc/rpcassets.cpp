@@ -369,21 +369,23 @@ Value newcompany(const Array& params, bool fHelp)
         throw runtime_error("Help message not found\n");
 
     Array issue_params;
-    issue_params.push_back(&params[0].get_value());
+    const Value& address = params[0];
+    issue_params.push_back(address);
 
     Object asset_params;
-    asset_params.push_back(Pair("name", &params[1].get_value()));
+    const Value& cnpj = params[1];
+    asset_params.push_back(Pair("name", cnpj);
     asset_params.push_back(Pair("open", true));
     asset_params.push_back(Pair("restrict", "send,receive"));
-
-    issue_params.push_back(&asset_params);
+    
+    issue_params.push_back(asset_params);
     issue_params.push_back(0);
     issue_params.push_back(1);
     issue_params.push_back(0);
 
-    const Value& value = params[2];
+    const Value& details = params[2];
 
-    issue_params.push_back(value);
+    issue_params.push_back(details);
 
     return issuecmd(issue_params, fHelp);
     /*
