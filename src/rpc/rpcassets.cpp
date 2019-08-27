@@ -374,7 +374,7 @@ Value newcompany(const Array& params, bool fHelp)
 
     Object asset_params;
     const Value& cnpj = params[1];
-    asset_params.push_back(Pair("name", cnpj);
+    asset_params.push_back(Pair("name", cnpj));
     asset_params.push_back(Pair("open", true));
     asset_params.push_back(Pair("restrict", "send,receive"));
     
