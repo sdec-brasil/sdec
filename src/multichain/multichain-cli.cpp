@@ -36,12 +36,12 @@ std::string HelpMessageCli()
     string strUsage;
     strUsage += _("Options:") + "\n";
     strUsage += "  -?                       " + _("This help message") + "\n";
-    strUsage += "  -conf=<file>             " + strprintf(_("Specify configuration file (default: %s)"), "multichain.conf") + "\n";
+    strUsage += "  -conf=<file>             " + strprintf(_("Specify configuration file (default: %s)"), "sdec.conf") + "\n";
     strUsage += "  -datadir=<dir>           " + _("Specify data directory") + "\n";
     strUsage += "  -cold                    " + _("Connect to sdecd-cold: use sdecd-cold default directory if -datadir is not set") + "\n";
 /* MCHN START */    
     strUsage += "  -requestout=<requestout> " + _("Send request to stderr, stdout or null (not print it at all), default stderr") + "\n"; 
-    strUsage += "  -saveclilog=<n>          " + _("If <n>=0 multichain-cli history is not saved, default 1") + "\n";
+    strUsage += "  -saveclilog=<n>          " + _("If <n>=0 sdec-cli history is not saved, default 1") + "\n";
 /*    
     strUsage += "  -testnet               " + _("Use the test network") + "\n";
     strUsage += "  -regtest               " + _("Enter regression test mode, which uses a special chain in which blocks can be "
@@ -127,7 +127,7 @@ static int AppInitRPC(int argc, char* argv[])
         (mc_gState->m_Params->NetworkName() == NULL) ||
         mc_gState->m_Params->m_NumArguments<minargs)
       {
-        fprintf(stdout,"\nMultiChain %s RPC client\n\n",mc_BuildDescription(mc_gState->GetNumericVersion()).c_str());
+        fprintf(stdout,"\nSDEC %s RPC client\n\n",mc_BuildDescription(mc_gState->GetNumericVersion()).c_str());
         
         std::string strUsage = "";
         if (mc_gState->m_Params->HasOption("-version"))
@@ -136,9 +136,9 @@ static int AppInitRPC(int argc, char* argv[])
         else
         {
             strUsage += "\n" + _("Usage:") + "\n" +
-                  "  multichain-cli <blockchain-name> [options] <command> [params]  " + _("Send command to MultiChain Core") + "\n" +
-                  "  multichain-cli <blockchain-name> [options] help                " + _("List commands") + "\n" +
-                  "  multichain-cli <blockchain-name> [options] help <command>      " + _("Get help for a command") + "\n";
+                  "  sdec-cli <blockchain-name> [options] <command> [params]  " + _("Send command to SDEC Core") + "\n" +
+                  "  sdec-cli <blockchain-name> [options] help                " + _("List commands") + "\n" +
+                  "  sdec-cli <blockchain-name> [options] help <command>      " + _("Get help for a command") + "\n";
 
             strUsage += "\n" + HelpMessageCli();                                // MCHN-TODO Edit help message
         }
@@ -218,7 +218,7 @@ Object CallRPC(const string& strMethod, const Array& params)
     if (mapArgs["-rpcuser"] == "" && mapArgs["-rpcpassword"] == "")
         throw runtime_error(strprintf(
             _("No credentials found for chain \"%s\"\n\n"
-              "You must set rpcpassword=<password> in the configuration file:\n%s/multichain.conf\n"
+              "You must set rpcpassword=<password> in the configuration file:\n%s/sdec.conf\n"
               "If the file does not exist, create it with owner-readable-only file permissions."),
                 mc_gState->m_Params->NetworkName(),mc_gState->m_Params->DataDir(1,0)));
 
@@ -417,10 +417,10 @@ int main(int argc, char* argv[])
         string strMethod=strprintf("%s",mc_gState->m_Params->NetworkName());
         if(HaveAPIWithThisName(strMethod))
         {
-            fprintf(stdout,"\nMultiChain %s RPC client\n\n",mc_BuildDescription(mc_gState->GetNumericVersion()).c_str());
+            fprintf(stdout,"\nSDEC %s RPC client\n\n",mc_BuildDescription(mc_gState->GetNumericVersion()).c_str());
             printf("ERROR: Couldn't read configuration file for blockchain %s. \n\n"
                     "Be sure include the blockchain name before the command name, e.g.:\n\n"
-                    "multichain-cli chain1 %s\n\n",mc_gState->m_Params->NetworkName(),mc_gState->m_Params->NetworkName());
+                    "sdec-cli chain1 %s\n\n",mc_gState->m_Params->NetworkName(),mc_gState->m_Params->NetworkName());
             return EXIT_FAILURE;                        
         }
     }
@@ -428,12 +428,12 @@ int main(int argc, char* argv[])
  #ifndef WIN32   
     if(mc_gState->m_Params->m_NumArguments == 1)                                // Interactive mode
     {
-        fprintf(stdout,"\nMultiChain %s RPC client\n\n",mc_BuildDescription(mc_gState->GetNumericVersion()).c_str());
+        fprintf(stdout,"\nSDEC %s RPC client\n\n",mc_BuildDescription(mc_gState->GetNumericVersion()).c_str());
         if (mapArgs["-rpcuser"] == "" && mapArgs["-rpcpassword"] == "")
         {
             string str=strprintf(
                 _("No credentials found for chain \"%s\"\n\n"
-                  "You must set rpcpassword=<password> in the configuration file:\n%s/multichain.conf\n"
+                  "You must set rpcpassword=<password> in the configuration file:\n%s/sdec.conf\n"
                   "If the file does not exist, create it with owner-readable-only file permissions."),
                     mc_gState->m_Params->NetworkName(),mc_gState->m_Params->DataDir(1,0));
             printf("error: %s\n",str.c_str());

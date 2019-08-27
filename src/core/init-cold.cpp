@@ -190,18 +190,18 @@ std::string HelpMessage_Cold()
     // When adding new options to the categories, please keep and ensure alphabetical ordering.
     string strUsage = _("Options:") + "\n";
     strUsage += "  -?                     " + _("This help message") + "\n";
-    strUsage += "  -conf=<file>           " + strprintf(_("Specify configuration file (default: %s)"), "multichain.conf") + "\n";
+    strUsage += "  -conf=<file>           " + strprintf(_("Specify configuration file (default: %s)"), "sdec.conf") + "\n";
 #if !defined(WIN32)
         strUsage += "  -daemon                " + _("Run in the background as a daemon and accept commands") + "\n";
 #endif
         
     strUsage += "  -datadir=<dir>         " + _("Specify data directory") + "\n";
 #ifndef WIN32
-    strUsage += "  -pid=<file>            " + strprintf(_("Specify pid file (default: %s)"), "multichain.pid") + "\n";
+    strUsage += "  -pid=<file>            " + strprintf(_("Specify pid file (default: %s)"), "sdec.pid") + "\n";
 #endif
 #if !defined(WIN32)
     strUsage += "  -sysperms              " + _("Create new files with system default permissions, instead of umask 077 (only effective with disabled wallet functionality)") + "\n";
-    strUsage += "  -shortoutput           " + _("Returns connection string if this node can start or default multichain address otherwise") + "\n";
+    strUsage += "  -shortoutput           " + _("Returns connection string if this node can start or default sdec address otherwise") + "\n";
 #endif
 
 
@@ -565,7 +565,7 @@ bool AppInit2_Cold(boost::thread_group& threadGroup,int OutputPipe)
     } // (!fDisableWallet)
 
 /* MCHN START*/    
-    uiInterface.InitMessage(_("Initializing multichain..."));
+    uiInterface.InitMessage(_("Initializing sdec..."));
 
     if(GetBoolArg("-offline",false))
     {

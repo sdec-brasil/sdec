@@ -342,7 +342,7 @@ std::string HelpMessage(HelpMessageMode mode)                                   
     strUsage += "  -blocknotify=<cmd>     " + _("Execute command when the best block changes (%s in cmd is replaced by block hash)") + "\n";
     strUsage += "  -checkblocks=<n>       " + strprintf(_("How many blocks to check at startup (default: %u, 0 = all)"), 288) + "\n";
     strUsage += "  -checklevel=<n>        " + strprintf(_("How thorough the block verification of -checkblocks is (0-4, default: %u)"), 3) + "\n";
-    strUsage += "  -conf=<file>           " + strprintf(_("Specify configuration file (default: %s)"), "multichain.conf") + "\n";
+    strUsage += "  -conf=<file>           " + strprintf(_("Specify configuration file (default: %s)"), "sdec.conf") + "\n";
     if (mode == HMM_BITCOIND)
     {
 #if !defined(WIN32)
@@ -356,12 +356,12 @@ std::string HelpMessage(HelpMessageMode mode)                                   
     strUsage += "  -maxorphantx=<n>       " + strprintf(_("Keep at most <n> unconnectable transactions in memory (default: %u)"), DEFAULT_MAX_ORPHAN_TRANSACTIONS) + "\n";
     strUsage += "  -par=<n>               " + strprintf(_("Set the number of script verification threads (%u to %d, 0 = auto, <0 = leave that many cores free, default: %d)"), -(int)boost::thread::hardware_concurrency(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS) + "\n";
 #ifndef WIN32
-    strUsage += "  -pid=<file>            " + strprintf(_("Specify pid file (default: %s)"), "multichain.pid") + "\n";
+    strUsage += "  -pid=<file>            " + strprintf(_("Specify pid file (default: %s)"), "sdec.pid") + "\n";
 #endif
     strUsage += "  -reindex               " + _("Rebuild the blockchain and reindex transactions on startup.") + "\n";
 #if !defined(WIN32)
     strUsage += "  -sysperms              " + _("Create new files with system default permissions, instead of umask 077 (only effective with disabled wallet functionality)") + "\n";
-    strUsage += "  -shortoutput           " + _("Returns connection string if this node can start or default multichain address otherwise") + "\n";
+    strUsage += "  -shortoutput           " + _("Returns connection string if this node can start or default sdec address otherwise") + "\n";
 #endif
 /* MCHN START */    
 /* Default was 0 */    
@@ -1153,7 +1153,7 @@ bool AppInit2(boost::thread_group& threadGroup,int OutputPipe)
     } // (!fDisableWallet)
 
 /* MCHN START*/    
-    uiInterface.InitMessage(_("Initializing multichain..."));
+    uiInterface.InitMessage(_("Initializing sdec..."));
     RegisterNodeSignals(GetNodeSignals());
 
     if(GetBoolArg("-v1apicompatible",false))
@@ -1875,10 +1875,10 @@ bool AppInit2(boost::thread_group& threadGroup,int OutputPipe)
                         sprintf(bufOutput,"Please ask blockchain admin or user having activate permission to let you connect and/or transact:\n");
                         bytes_written=write(OutputPipe,bufOutput,strlen(bufOutput));
 
-                        sprintf(bufOutput,"multichain-cli %s grant %s connect\n",mc_gState->m_NetworkParams->Name(),
+                        sprintf(bufOutput,"sdec-cli %s grant %s connect\n",mc_gState->m_NetworkParams->Name(),
                              CBitcoinAddress(pwalletMain->vchDefaultKey.GetID()).ToString().c_str());
                         bytes_written=write(OutputPipe,bufOutput,strlen(bufOutput));
-                        sprintf(bufOutput,"multichain-cli %s grant %s connect,send,receive\n\n",mc_gState->m_NetworkParams->Name(),
+                        sprintf(bufOutput,"sdec-cli %s grant %s connect,send,receive\n\n",mc_gState->m_NetworkParams->Name(),
                              CBitcoinAddress(pwalletMain->vchDefaultKey.GetID()).ToString().c_str());
                         bytes_written=write(OutputPipe,bufOutput,strlen(bufOutput));
                     }

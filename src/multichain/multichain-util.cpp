@@ -190,10 +190,10 @@ int main(int argc, char* argv[])
     {
         mc_GetFullFileName("<blockchain-name>","params", ".dat",MC_FOM_RELATIVE_TO_DATADIR,fileName);
         printf("Usage:\n");
-        printf("  multichain-util create <blockchain-name>  ( <protocol-version> = %d ) [options]        Creates new multichain configuration file %s with default parameters\n",
+        printf("  sdec-util create <blockchain-name>  ( <protocol-version> = %d ) [options]        Creates new sdec configuration file %s with default parameters\n",
                 mc_gState->GetProtocolVersion(),fileName);
         mc_GetFullFileName("<new-blockchain-name>","params", ".dat",MC_FOM_RELATIVE_TO_DATADIR,fileName);
-        printf("  multichain-util clone <old-blockchain-name> <new-blockchain-name> [options]               Creates new multichain configuration file %s copying parameters\n",fileName);
+        printf("  sdec-util clone <old-blockchain-name> <new-blockchain-name> [options]               Creates new sdec configuration file %s copying parameters\n",fileName);
         
         isSetDataDirArg=mc_GetDataDirArg(DataDirArg);
         if(isSetDataDirArg)
