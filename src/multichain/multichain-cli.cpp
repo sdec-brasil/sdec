@@ -472,7 +472,7 @@ int main(int argc, char* argv[])
                 commandEnd=command+strlen(command);
                 offset=0;
                 argc_p=0;
-                strcpy(dest+offset,"multichain-cli");
+                strcpy(dest+offset,"sdec-cli");
                 argv_p[argc_p]=dest+offset;
                 argc_p++;
                 offset+=strlen(dest+offset)+1;
