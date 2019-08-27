@@ -295,9 +295,9 @@ boost::filesystem::path mc_GetDefaultDataDir()
     // Windows
     if(mc_gState->m_SessionFlags & MC_SSF_COLD)
     {
-        return GetSpecialFolderPath(CSIDL_APPDATA) / "MultiChainCold";
+        return GetSpecialFolderPath(CSIDL_APPDATA) / "SDECCold";
     }
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "MultiChain";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "SDEC";
 #else
     // Mac and Unix
     boost::filesystem::path pathRet;
@@ -309,9 +309,9 @@ boost::filesystem::path mc_GetDefaultDataDir()
     
     if(mc_gState->m_SessionFlags & MC_SSF_COLD)
     {
-        return pathRet / ".multichain-cold";        
+        return pathRet / ".sdec-cold";        
     }
-    return pathRet / ".multichain";
+    return pathRet / ".sdec";
 #endif
 }
 
@@ -385,7 +385,7 @@ void mc_CheckDataDirInConfFile()
     mc_MapStringString *mapConfig;
     
     mapConfig=new mc_MapStringString;
-    if(mc_ReadGeneralConfigFile(mapConfig,NULL,"multichain",".conf") == 0)
+    if(mc_ReadGeneralConfigFile(mapConfig,NULL,"sdec",".conf") == 0)
     {
         if(mapConfig->Get("datadir") != NULL)
         {
@@ -614,7 +614,7 @@ size_t mc_ReadFileToBuffer(FILE *fHan,char **lpptr)
 
 boost::filesystem::path mc_GetConfigFile(const char *network_name,const char *file_name,const char *extension)
 {
-    string fileName="multichain";
+    string fileName="sdec";
     if(file_name)
     {
         fileName = file_name;
@@ -750,7 +750,7 @@ int mc_ReadConfigFile(
 
 int mc_Params::ReadConfig(const char *network_name)
 {
-    mc_ReadConfigFile(mc_GetConfigFile(network_name,"multichain",".conf"),&mapArgs, &mapMultiArgs,"-");    
+    mc_ReadConfigFile(mc_GetConfigFile(network_name,"sdec",".conf"),&mapArgs, &mapMultiArgs,"-");    
     return mc_ReadConfigFile(mc_GetConfigFile(NULL,NULL,".conf"),&mapArgs, &mapMultiArgs,"-");    
 }
 
@@ -828,7 +828,7 @@ int mc_MultichainParams::SetGlobals()
     void *ptr=GetParam("chainprotocol",NULL);
     if(ptr)
     {
-        if(strcmp((char*)ptr,"multichain"))
+        if(strcmp((char*)ptr,"sdec"))
         {
             m_IsProtocolMultiChain=0;
         }
