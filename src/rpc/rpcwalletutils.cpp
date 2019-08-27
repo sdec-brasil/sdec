@@ -1074,7 +1074,7 @@ void AppendOffChainFormatData(uint32_t data_format,
 {
     if((mc_gState->m_WalletMode & MC_WMD_TXS) == 0)
     {
-        *strError="Offchain data is not supported with this wallet version. To get this functionality, run \"multichaind -walletdbversion=2 -rescan\"";
+        *strError="Offchain data is not supported with this wallet version. To get this functionality, run \"sdecd -walletdbversion=2 -rescan\"";
         *errorCode=RPC_NOT_SUPPORTED;
         return;
     }   

@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
                 { 
                     printf("Blockchain parameter set was successfully generated.\n");
                     mc_GetFullFileName(mc_gState->m_Params->m_Arguments[1],"params", ".dat",MC_FOM_RELATIVE_TO_DATADIR,fileName);
-                    printf("You can edit it in %s before running multichaind for the first time.\n\n",fileName);
-                    printf("To generate blockchain please run \"multichaind %s -daemon\".\n",params->Name());
+                    printf("You can edit it in %s before running sdecd for the first time.\n\n",fileName);
+                    printf("To generate blockchain please run \"sdecd %s -daemon\".\n",params->Name());
                 }                
                 else
                 {
@@ -138,8 +138,8 @@ int main(int argc, char* argv[])
                     
                     printf("Blockchain parameter set was successfully cloned.\n");
                     mc_GetFullFileName(mc_gState->m_Params->m_Arguments[2],"params", ".dat",MC_FOM_RELATIVE_TO_DATADIR,fileName);
-                    printf("You can edit it in %s before running multichaind for the first time.\n\n",fileName);
-                    printf("To generate blockchain please run \"multichaind %s -daemon\".\n",params->Name());
+                    printf("You can edit it in %s before running sdecd for the first time.\n\n",fileName);
+                    printf("To generate blockchain please run \"sdecd %s -daemon\".\n",params->Name());
                 }                
                 else
                 {
