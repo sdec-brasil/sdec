@@ -332,7 +332,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     if(mc_gState->m_NetworkParams->IsProtocolMultichain())
     {
         obj.push_back(Pair("subversion",
-            FormatSubVersion("MultiChain", mc_gState->GetProtocolVersion(), std::vector<string>())));
+            FormatSubVersion("SDEC", mc_gState->GetProtocolVersion(), std::vector<string>())));
     }
     else
     {

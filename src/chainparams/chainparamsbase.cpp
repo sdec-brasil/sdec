@@ -65,7 +65,7 @@ public:
     CBaseMultiChainParams()
     {
         networkID = CBaseChainParams::MULTICHAIN;
-        strDataDir = "multichain";
+        strDataDir = "sdec";
     }
     void setDataDir(std::string NetworkName)
     {

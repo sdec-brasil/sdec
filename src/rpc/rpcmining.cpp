@@ -280,7 +280,7 @@ Value prioritisetransaction(const Array& params, bool fHelp)
     if (fHelp || params.size() != 3)
         throw runtime_error("Help message not found\n");
 
-    throw JSONRPCError(RPC_NOT_SUPPORTED, "Transaction prioritization is not supported in this version of MultiChain");        
+    throw JSONRPCError(RPC_NOT_SUPPORTED, "Transaction prioritization is not supported in this version of SDEC");        
     
 /* MCHN START */    
 //    uint256 hash = ParseHashStr(params[0].get_str(), "txid");
@@ -318,7 +318,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error("Help message not found\n");
 
-    throw JSONRPCError(RPC_NOT_SUPPORTED, "getblocktemplate is not supported in this version of MultiChain");        
+    throw JSONRPCError(RPC_NOT_SUPPORTED, "getblocktemplate is not supported in this version of SDEC");        
     
     std::string strMode = "template";
     Value lpval = Value::null;
@@ -371,10 +371,10 @@ Value getblocktemplate(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
 
     if (vNodes.empty())
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "MultiChain is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "SDEC is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "MultiChain is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "SDEC is downloading blocks...");
 
     static unsigned int nTransactionsUpdatedLast;
 

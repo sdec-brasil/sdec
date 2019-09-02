@@ -510,7 +510,7 @@ void CNode::PushVersion()
     std::string subver=FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>());
     if(mc_gState->m_NetworkParams->IsProtocolMultichain())
     {
-        subver=FormatSubVersion("MultiChain", mc_gState->GetProtocolVersion(), std::vector<string>());
+        subver=FormatSubVersion("SDEC", mc_gState->GetProtocolVersion(), std::vector<string>());
     }
     PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
                 nLocalHostNonce, subver, nBestHeight, true);
@@ -1145,7 +1145,7 @@ void ThreadMapPort()
             }
         }
 
-        string strDesc = "MultiChain " + FormatFullVersion();
+        string strDesc = "SDEC " + FormatFullVersion();
 
         try {
             while (true) {
