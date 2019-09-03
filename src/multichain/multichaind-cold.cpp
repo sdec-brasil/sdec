@@ -112,13 +112,13 @@ bool AppInit(int argc, char* argv[])
     
     if(!mc_DoesParentDataDirExist())
     {
-        fprintf(stderr,"\nError: Data directory %s needs to exist before calling multichaind-cold. Exiting...\n\n",mapArgs["-datadir"].c_str());
+        fprintf(stderr,"\nError: Data directory %s needs to exist before calling sdecd-cold. Exiting...\n\n",mapArgs["-datadir"].c_str());
         return false;        
     }
         
     if(!mc_DoesParentLogDirExist())
     {
-        fprintf(stderr,"\nError: Log directory %s needs to exist before calling multichaind-cold. Exiting...\n\n",mapArgs["-logdir"].c_str());
+        fprintf(stderr,"\nError: Log directory %s needs to exist before calling sdecd-cold. Exiting...\n\n",mapArgs["-logdir"].c_str());
         return false;        
     }
         
@@ -140,7 +140,7 @@ bool AppInit(int argc, char* argv[])
         else
         {
             strUsage += "\n" + _("Usage:") + "\n" +
-                  "  multichaind-cold <blockchain-name> [options]                     " + _("Start MultiChain Offline Daemon") + "\n";
+                  "  sdecd-cold <blockchain-name> [options]                     " + _("Start SDEC Offline Daemon") + "\n";
 
             strUsage += "\n" + HelpMessage_Cold();  
         }
@@ -153,7 +153,7 @@ bool AppInit(int argc, char* argv[])
 
     if(!GetBoolArg("-shortoutput", false))
     {
-        fprintf(stdout,"\nMultiChain %s Offline Daemon (latest protocol %d)\n\n",mc_BuildDescription(mc_gState->GetNumericVersion()).c_str(),mc_gState->GetProtocolVersion());
+        fprintf(stdout,"\nSDEC %s Offline Daemon (latest protocol %d)\n\n",mc_BuildDescription(mc_gState->GetNumericVersion()).c_str(),mc_gState->GetProtocolVersion());
     }
     
     pipes[1]=STDOUT_FILENO;
@@ -273,11 +273,11 @@ bool AppInit(int argc, char* argv[])
     {
         if(err == MC_ERR_CORRUPTED)
         {
-            fprintf(stderr,"\nERROR: Couldn't initialize permission database for blockchain %s. Please restart multichaind with reindex=1.\n",mc_gState->m_Params->NetworkName());                        
+            fprintf(stderr,"\nERROR: Couldn't initialize permission database for blockchain %s. Please restart sdecd with reindex=1.\n",mc_gState->m_Params->NetworkName());                        
         }
         else
         {
-            fprintf(stderr,"\nERROR: Couldn't initialize permission database for blockchain %s. Probably multichaind for this blockchain is already running. Exiting...\n",mc_gState->m_Params->NetworkName());
+            fprintf(stderr,"\nERROR: Couldn't initialize permission database for blockchain %s. Probably sdecd for this blockchain is already running. Exiting...\n",mc_gState->m_Params->NetworkName());
         }
         delete mc_gState;                
         return false;

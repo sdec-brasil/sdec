@@ -434,7 +434,7 @@ boost::filesystem::path GetDefaultDataDir()
 /* MCHN END */
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "MultiChain";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "SDEC";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -446,10 +446,10 @@ boost::filesystem::path GetDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     TryCreateDirectory(pathRet);
-    return pathRet / "MultiChain";
+    return pathRet / "SDEC";
 #else
     // Unix
-    return pathRet / ".multichain";
+    return pathRet / ".sdec";
 #endif
 #endif
 }
@@ -555,7 +555,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 //#ifndef WIN32
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "multichain.pid"));
+    boost::filesystem::path pathPidFile(GetArg("-pid", "sdec.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }

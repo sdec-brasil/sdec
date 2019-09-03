@@ -355,7 +355,43 @@ exitlbl:
     return wtx.GetHash().GetHex();    
 }
  
+ //sdec-cli <chainName> <"companyAddress"> <"CNPJ"> <{details}>
+ //sdec-cli issue companyAddress '{"name":<"CNPJ">,"open":true}' 0 1 0 '{details}'
+ //sdec-cli grant companyAddress <"CNPJ">.activate
+Value newcompany(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3)
+        throw runtime_error("Help message not found\n");
 
+    Array issue_params;
+    const Value& address = params[0];
+    issue_params.push_back(address);
+
+    Object asset_params;
+    const Value& cnpj = params[1];
+    asset_params.push_back(Pair("name", cnpj));
+    asset_params.push_back(Pair("open", true));
+    asset_params.push_back(Pair("restrict", "send,receive"));
+    
+    issue_params.push_back(asset_params);
+    issue_params.push_back(0);
+    issue_params.push_back(1);
+    issue_params.push_back(0);
+
+    issue_params.push_back(params[2]);
+    
+    issuecmd(issue_params, fHelp);
+    
+    Array grant_params;
+    grant_params.push_back(params[0]);
+
+    std::string asset_activate = params[1].get_str();
+    asset_activate.append(".activate");
+    
+    grant_params.push_back(asset_activate);
+
+    return grantcmd(grant_params, fHelp);
+}
 
 Value issuecmd(const Array& params, bool fHelp)
 {
@@ -1282,7 +1318,7 @@ Value getassetbalances(const Array& params, bool fHelp)
             {
                 if(mc_gState->m_WalletMode & MC_WMD_ADDRESS_TXS)
                 {
-                    throw JSONRPCError(RPC_NOT_SUPPORTED, "Accounts are not supported with scalable wallet - if you need getassetbalances, run multichaind -walletdbversion=1 -rescan, but the wallet will perform worse");        
+                    throw JSONRPCError(RPC_NOT_SUPPORTED, "Accounts are not supported with scalable wallet - if you need getassetbalances, run sdecd -walletdbversion=1 -rescan, but the wallet will perform worse");        
                 }            
             }
             BOOST_FOREACH(const PAIRTYPE(CBitcoinAddress, CAddressBookData)& item, pwalletMain->mapAddressBook)
@@ -2115,7 +2151,7 @@ Value getassettransaction(const Array& params, bool fHelp)
     
     if((mc_gState->m_WalletMode & MC_WMD_TXS) == 0)
     {
-        throw JSONRPCError(RPC_NOT_SUPPORTED, "API is not supported with this wallet version. To get this functionality, run \"multichaind -walletdbversion=2 -rescan\" ");        
+        throw JSONRPCError(RPC_NOT_SUPPORTED, "API is not supported with this wallet version. To get this functionality, run \"sdecd -walletdbversion=2 -rescan\" ");        
     }   
            
     mc_EntityDetails asset_entity;
@@ -2167,7 +2203,7 @@ Value listassettransactions(const Array& params, bool fHelp)
 
     if((mc_gState->m_WalletMode & MC_WMD_TXS) == 0)
     {
-        throw JSONRPCError(RPC_NOT_SUPPORTED, "API is not supported with this wallet version. To get this functionality, run \"multichaind -walletdbversion=2 -rescan\" ");        
+        throw JSONRPCError(RPC_NOT_SUPPORTED, "API is not supported with this wallet version. To get this functionality, run \"sdecd -walletdbversion=2 -rescan\" ");        
     }   
 
     Array retArray;

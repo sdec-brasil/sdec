@@ -480,7 +480,7 @@ int mc_MultichainParams::Create(const char* name,int version)
                                     {
                                         if(strlen(name)+19<=(size_t)(param->m_MaxStringSize))
                                         {
-                                            sprintf(ptrData,"MultiChain %s",name);
+                                            sprintf(ptrData,"SDEC %s",name);
                                         }
                                         size=strlen(ptrData)+1;
                                     }                                   
@@ -1341,8 +1341,8 @@ int mc_MultichainParams::Print(FILE* fileHan)
     int param_sets[]={MC_PRM_COMMENT, MC_PRM_USER, MC_PRM_GENERATED, MC_PRM_CALCULATED};
     num_sets=sizeof(param_sets)/sizeof(int);    
     
-    fprintf(fileHan,"# ==== MultiChain configuration file ====\n\n");
-    fprintf(fileHan,"# Created by multichain-util \n");
+    fprintf(fileHan,"# ==== SDEC configuration file ====\n\n");
+    fprintf(fileHan,"# Created by sdec-util \n");
     
     version=ProtocolVersion();
     if(version)
@@ -1358,24 +1358,24 @@ int mc_MultichainParams::Print(FILE* fileHan)
     {
         case MC_PRM_STATUS_EMPTY:
             fprintf(fileHan,"# Parameter set is EMPTY \n");
-            fprintf(fileHan,"# To join network please run \"multichaind %s@<seed-node-ip>[:<seed-node-port>]\".\n",Name());
+            fprintf(fileHan,"# To join network please run \"sdecd %s@<seed-node-ip>[:<seed-node-port>]\".\n",Name());
             return MC_ERR_NOERROR;
         case MC_PRM_STATUS_ERROR:
             fprintf(fileHan,"# This parameter set cannot be used for generating network. \n");
             fprintf(fileHan,"# One of the parameters is invalid. \n");
-            fprintf(fileHan,"# Please fix it and rerun multichain-util. \n");
+            fprintf(fileHan,"# Please fix it and rerun sdec-util. \n");
             break;
         case MC_PRM_STATUS_MINIMAL:
             fprintf(fileHan,"# This parameter set contains MINIMAL number of parameters required for connection to existing network. \n");
-            fprintf(fileHan,"# To join network please run \"multichaind %s@<seed-node-ip>[:<seed-node-port>]\".\n",Name());
+            fprintf(fileHan,"# To join network please run \"sdecd %s@<seed-node-ip>[:<seed-node-port>]\".\n",Name());
             break;
         case MC_PRM_STATUS_GENERATED:
             fprintf(fileHan,"# This parameter set is properly GENERATED. \n");
-            fprintf(fileHan,"# To generate network please run \"multichaind %s\".\n",Name());
+            fprintf(fileHan,"# To generate network please run \"sdecd %s\".\n",Name());
             break;
         case MC_PRM_STATUS_VALID:
             fprintf(fileHan,"# This parameter set is VALID. \n");
-            fprintf(fileHan,"# To join network please run \"multichaind %s\".\n",Name());
+            fprintf(fileHan,"# To join network please run \"sdecd %s\".\n",Name());
             break;
     }
         
@@ -1397,7 +1397,7 @@ int mc_MultichainParams::Print(FILE* fileHan)
                     switch(param_sets[set])
                     {
                         case MC_PRM_COMMENT:
-                            fprintf(fileHan,"# The following parameters don't influence multichain network configuration. \n");
+                            fprintf(fileHan,"# The following parameters don't influence sdec network configuration. \n");
                             fprintf(fileHan,"# They may be edited at any moment. \n");                            
                             break;
                         case MC_PRM_USER:
@@ -1406,28 +1406,28 @@ int mc_MultichainParams::Print(FILE* fileHan)
                                 fprintf(fileHan,"# The following parameters can be edited to fix errors. \n");
                                 if(Name())
                                 {
-                                    fprintf(fileHan,"# Please rerun \"multichain-util clone %s <new-network-name>\". \n",Name());
+                                    fprintf(fileHan,"# Please rerun \"sdec-util clone %s <new-network-name>\". \n",Name());
                                 }
                             }
                             else
                             {
                                 if(m_Status == MC_PRM_STATUS_GENERATED)
                                 {
-                                    fprintf(fileHan,"# The following parameters can be edited before running multichaind for this chain. \n");                                    
+                                    fprintf(fileHan,"# The following parameters can be edited before running sdecd for this chain. \n");                                    
                                 }
                                 else
                                 {
                                     fprintf(fileHan,"# The following parameters can only be edited if this file is a prototype of another configuration file. \n");
-                                    fprintf(fileHan,"# Please run \"multichain-util clone %s <new-network-name>\" to generate new network. \n",Name());
+                                    fprintf(fileHan,"# Please run \"sdec-util clone %s <new-network-name>\" to generate new network. \n",Name());
                                 }
                             }
                             break;
                         case MC_PRM_GENERATED:
-                            fprintf(fileHan,"# The following parameters were generated by multichain-util.\n");
+                            fprintf(fileHan,"# The following parameters were generated by sdec-util.\n");
                             fprintf(fileHan,"# They SHOULD ONLY BE EDITED IF YOU KNOW WHAT YOU ARE DOING. \n");
                             break;
                         case MC_PRM_CALCULATED:
-                            fprintf(fileHan,"# The following parameters were generated by multichaind.\n");
+                            fprintf(fileHan,"# The following parameters were generated by sdecd.\n");
                             fprintf(fileHan,"# They SHOULD NOT BE EDITED. \n");
                             break;
                     }

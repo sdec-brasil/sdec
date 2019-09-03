@@ -112,14 +112,14 @@ bool AppInit(int argc, char* argv[])
     
     if(!mc_DoesParentDataDirExist())
     {
-        fprintf(stderr,"\nError: Data directory %s needs to exist before calling multichaind. Exiting...\n\n",mapArgs["-datadir"].c_str());
+        fprintf(stderr,"\nError: Data directory %s needs to exist before calling sdecd. Exiting...\n\n",mapArgs["-datadir"].c_str());
         delete mc_gState;
         return false;        
     }
         
     if(!mc_DoesParentLogDirExist())
     {
-        fprintf(stderr,"\nError: Log directory %s needs to exist before calling multichaind. Exiting...\n\n",mapArgs["-logdir"].c_str());
+        fprintf(stderr,"\nError: Log directory %s needs to exist before calling sdecd. Exiting...\n\n",mapArgs["-logdir"].c_str());
         return false;        
     }
     
@@ -156,7 +156,7 @@ bool AppInit(int argc, char* argv[])
         else
         {
             strUsage += "\n" + _("Usage:") + "\n" +
-                  "  multichaind <blockchain-name> [options]                     " + _("Start MultiChain Core Daemon") + "\n";
+                  "  sdecd <blockchain-name> [options]                     " + _("Start SDEC Core Daemon") + "\n";
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);                       // MCHN-TODO edit help message
         }
@@ -285,11 +285,11 @@ bool AppInit(int argc, char* argv[])
     {
         if(err == MC_ERR_CORRUPTED)
         {
-            fprintf(stderr,"\nERROR: Couldn't initialize permission database for blockchain %s. Please restart multichaind with reindex=1.\n",mc_gState->m_Params->NetworkName());                        
+            fprintf(stderr,"\nERROR: Couldn't initialize permission database for blockchain %s. Please restart sdecd with reindex=1.\n",mc_gState->m_Params->NetworkName());                        
         }
         else
         {
-            fprintf(stderr,"\nERROR: Couldn't initialize permission database for blockchain %s. Probably multichaind for this blockchain is already running. Exiting...\n",mc_gState->m_Params->NetworkName());
+            fprintf(stderr,"\nERROR: Couldn't initialize permission database for blockchain %s. Probably sdecd for this blockchain is already running. Exiting...\n",mc_gState->m_Params->NetworkName());
         }
         delete pEF;
         delete mc_gState;                
@@ -340,12 +340,12 @@ bool AppInit(int argc, char* argv[])
             {
                 fprintf(stderr,"ERROR: Parameter set for blockchain %s is not complete. \n\n\n",mc_gState->m_Params->NetworkName());  
                 fprintf(stderr,"If you want to create new blockchain please run one of the following:\n\n");
-                fprintf(stderr,"  multichain-util create %s\n",mc_gState->m_Params->NetworkName());
-                fprintf(stderr,"  multichain-util clone <old-blockchain-name> %s\n",mc_gState->m_Params->NetworkName());
-                fprintf(stderr,"\nAnd rerun multichaind %s\n\n\n",mc_gState->m_Params->NetworkName());                        
+                fprintf(stderr,"  sdec-util create %s\n",mc_gState->m_Params->NetworkName());
+                fprintf(stderr,"  sdec-util clone <old-blockchain-name> %s\n",mc_gState->m_Params->NetworkName());
+                fprintf(stderr,"\nAnd rerun sdecd %s\n\n\n",mc_gState->m_Params->NetworkName());                        
                 fprintf(stderr,"If you want to connect to existing blockchain please specify seed node:\n\n");
-                fprintf(stderr,"  multichaind %s@<seed-node-ip>\n",mc_gState->m_Params->NetworkName());
-                fprintf(stderr,"  multichaind %s@<seed-node-ip>:<seed-node-port>\n\n\n",mc_gState->m_Params->NetworkName());
+                fprintf(stderr,"  sdecd %s@<seed-node-ip>\n",mc_gState->m_Params->NetworkName());
+                fprintf(stderr,"  sdecd %s@<seed-node-ip>:<seed-node-port>\n\n\n",mc_gState->m_Params->NetworkName());
                 delete pEF;
                 delete mc_gState;                
                 return false;
@@ -353,15 +353,15 @@ bool AppInit(int argc, char* argv[])
             break;
         case MC_PRM_STATUS_ERROR:
             fprintf(stderr,"ERROR: Parameter set for blockchain %s has errors. Please run one of the following:\n\n",mc_gState->m_Params->NetworkName());                        
-            fprintf(stderr,"  multichain-util create %s\n",mc_gState->m_Params->NetworkName());
-            fprintf(stderr,"  multichain-util clone <old-blockchain-name> %s\n",mc_gState->m_Params->NetworkName());
-            fprintf(stderr,"\nAnd rerun multichaind %s\n",mc_gState->m_Params->NetworkName());                        
+            fprintf(stderr,"  sdec-util create %s\n",mc_gState->m_Params->NetworkName());
+            fprintf(stderr,"  sdec-util clone <old-blockchain-name> %s\n",mc_gState->m_Params->NetworkName());
+            fprintf(stderr,"\nAnd rerun sdecd %s\n",mc_gState->m_Params->NetworkName());                        
             delete pEF;
             delete mc_gState;                
             return false;
         case MC_PRM_STATUS_INVALID:
             fprintf(stderr,"ERROR: Parameter set for blockchain %s is invalid. You may generate new network using these parameters by running:\n\n",mc_gState->m_Params->NetworkName());                        
-            fprintf(stderr,"  multichain-util clone %s <new-blockchain-name>\n",mc_gState->m_Params->NetworkName());
+            fprintf(stderr,"  sdec-util clone %s <new-blockchain-name>\n",mc_gState->m_Params->NetworkName());
             delete pEF;
             delete mc_gState;                
             return false;

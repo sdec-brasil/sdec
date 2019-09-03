@@ -714,16 +714,16 @@ void StartRPCThreads(string& strError)
         unsigned char rand_pwd[32];
         GetRandBytes(rand_pwd, 32);
         uiInterface.ThreadSafeMessageBox(strprintf(
-            _("To use multichaind, you must set an rpcpassword in the configuration file:\n"
+            _("To use sdecd, you must set an rpcpassword in the configuration file:\n"
               "%s\n"
               "It is recommended you use the following random password:\n"
-              "rpcuser=multichainrpc\n"
+              "rpcuser=sdecrpc\n"
               "rpcpassword=%s\n"
               "(you do not need to remember this password)\n"
               "The username and password MUST NOT be the same.\n"
               "If the file does not exist, create it with owner-readable-only file permissions.\n"
               "It is also recommended to set alertnotify so you are notified of problems;\n"
-              "for example: alertnotify=echo %%s | mail -s \"MultiChain Alert\" admin@foo.com\n"),
+              "for example: alertnotify=echo %%s | mail -s \"SDEC Alert\" admin@foo.com\n"),
                 GetConfigFile().string(),
                 EncodeBase58(&rand_pwd[0],&rand_pwd[0]+32)),
                 "", CClientUIInterface::MSG_ERROR | CClientUIInterface::SECURE);
@@ -1189,7 +1189,7 @@ json_spirit::Value CRPCTable::execute(const std::string &strMethod, const json_s
         }
         else
         {
-            throw JSONRPCError(RPC_NOT_SUPPORTED, "Method not available in cold version of MultiChain");            
+            throw JSONRPCError(RPC_NOT_SUPPORTED, "Method not available in cold version of SDEC");            
         }
     }
 #ifdef ENABLE_WALLET
@@ -1202,7 +1202,7 @@ json_spirit::Value CRPCTable::execute(const std::string &strMethod, const json_s
     {
         if( setAllowedWhenWaitingForUpgrade.count(strMethod) == 0 )
         {
-            throw JSONRPCError(RPC_UPGRADE_REQUIRED, strprintf("BlockChain was upgraded to protocol version %d, please upgrade MultiChain",mc_gState->m_ProtocolVersionToUpgrade));
+            throw JSONRPCError(RPC_UPGRADE_REQUIRED, strprintf("BlockChain was upgraded to protocol version %d, please upgrade SDEC",mc_gState->m_ProtocolVersionToUpgrade));
         }
     }
     
@@ -1315,7 +1315,7 @@ json_spirit::Value CRPCTable::execute(const std::string &strMethod, const json_s
 }
 
 std::string HelpExampleCli(string methodname, string args){
-    return "> multichain-cli " + std::string(mc_gState->m_NetworkParams->Name()) + " " + methodname + " " + args + "\n";
+    return "> sdec-cli " + std::string(mc_gState->m_NetworkParams->Name()) + " " + methodname + " " + args + "\n";
 }
 
 std::string HelpExampleRpc(string methodname, string args){

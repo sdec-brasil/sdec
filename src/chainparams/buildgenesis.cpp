@@ -37,23 +37,23 @@ int mc_GenerateConfFiles(const char *network_name)
     FILE *fileHan;
     char rpcpwd[64];
     
-    fileHan=mc_OpenFile(NULL,"multichain",".conf","r",MC_FOM_RELATIVE_TO_DATADIR | MC_FOM_CREATE_DIR);
+    fileHan=mc_OpenFile(NULL,"sdec",".conf","r",MC_FOM_RELATIVE_TO_DATADIR | MC_FOM_CREATE_DIR);
     if(fileHan == NULL)
     {
-        fileHan=mc_OpenFile(NULL,"multichain",".conf","w",MC_FOM_RELATIVE_TO_DATADIR);
+        fileHan=mc_OpenFile(NULL,"sdec",".conf","w",MC_FOM_RELATIVE_TO_DATADIR);
     }
     if(fileHan)
     {
         mc_CloseFile(fileHan);
     }
     
-    fileHan=mc_OpenFile(network_name,"multichain",".conf","r",MC_FOM_RELATIVE_TO_DATADIR | MC_FOM_CREATE_DIR);
+    fileHan=mc_OpenFile(network_name,"sdec",".conf","r",MC_FOM_RELATIVE_TO_DATADIR | MC_FOM_CREATE_DIR);
     if(fileHan == NULL)
     {
-        fileHan=mc_OpenFile(network_name,"multichain",".conf","w",MC_FOM_RELATIVE_TO_DATADIR);
+        fileHan=mc_OpenFile(network_name,"sdec",".conf","w",MC_FOM_RELATIVE_TO_DATADIR);
         if(fileHan)
         {
-            fprintf(fileHan,"rpcuser=multichainrpc\n");
+            fprintf(fileHan,"rpcuser=sdecrpc\n");
             mc_RandomEncodedBase58String(rpcpwd,32);
             fprintf(fileHan,"rpcpassword=%s\n",rpcpwd);
 //            mc_CloseFile(fileHan);
