@@ -828,7 +828,7 @@ int mc_MultichainParams::SetGlobals()
     void *ptr=GetParam("chainprotocol",NULL);
     if(ptr)
     {
-        if(strcmp((char*)ptr,"sdec"))
+        if(strcmp((char*)ptr,"multichain"))
         {
             m_IsProtocolMultiChain=0;
         }
