@@ -53,7 +53,7 @@ int mc_State::IsSupported(int version)
     void *ptr=mc_gState->m_NetworkParams->GetParam("chainprotocol",NULL);
     if(ptr)
     {
-        if(strcmp((char*)ptr,"sdec"))
+        if(strcmp((char*)ptr,"multichain"))
         {
             return 1;
         }
@@ -74,7 +74,7 @@ int mc_State::IsDeprecated(int version)
     void *ptr=mc_gState->m_NetworkParams->GetParam("chainprotocol",NULL);
     if(ptr)
     {
-        if(strcmp((char*)ptr,"sdec"))
+        if(strcmp((char*)ptr,"multichain"))
         {
             is_protocol_multichain=0;
         }
