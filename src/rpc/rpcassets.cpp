@@ -378,21 +378,19 @@ Value newcompany(const Array& params, bool fHelp)
     issue_params.push_back(1);
     issue_params.push_back(0);
 
-    const Value& details = params[2];
-
-    issue_params.push_back(details);
-
-    return issuecmd(issue_params, fHelp);
-    /*
+    issue_params.push_back(params[2]);
+    
+    issuecmd(issue_params, fHelp);
+    
     Array grant_params;
-    grant_params.push_back(&params[0].get_str());
+    grant_params.push_back(params[0]);
 
     std::string asset_activate = params[1].get_str();
     asset_activate.append(".activate");
     
     grant_params.push_back(asset_activate);
 
-    return grantcmd(grant_params, fHelp); */
+    return grantcmd(grant_params, fHelp);
 }
 
 Value issuecmd(const Array& params, bool fHelp)
