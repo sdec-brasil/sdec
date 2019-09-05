@@ -264,14 +264,14 @@ Value mcd_DebugIssueLicenseToken(const Object& params)
     int protocol=20007;
     unsigned int timestamp=mc_TimeNowAsUInt();
     
-    lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_REQUEST_HASH,hash,32);
-    lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_REQUEST_ADDRESS,(unsigned char*)&KeyID,20);
+    lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_LICENSE_HASH,hash,32);
+    lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_ISSUE_ADDRESS,(unsigned char*)&KeyID,20);
     lpDetails->SetSpecialParamValue(MC_ENT_SPRM_NAME,(const unsigned char*)(name.c_str()),name.size());//+1);
     lpDetails->SetSpecialParamValue(MC_ENT_SPRM_ASSET_MULTIPLE,(unsigned char*)&multiple,4);    
     lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_CONFIRMATION_TIME,(unsigned char*)&dummy_int64,4);
     lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_CONFIRMATION_REF,(unsigned char*)&dummy_int64,2);
     lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_PUBKEY,(unsigned char*)&dummy_int64,2);
-    lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_MIN_VERSION,(unsigned char*)&version,4);
+    lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_MIN_NODE,(unsigned char*)&version,4);
     lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_MIN_PROTOCOL,(unsigned char*)&protocol,4);
     lpDetails->SetSpecialParamValue(MC_ENT_SPRM_LICENSE_SIGNATURE,(unsigned char*)&dummy_int64,1);
     lpDetails->SetSpecialParamValue(MC_ENT_SPRM_TIMESTAMP,(unsigned char*)&timestamp,4);
@@ -600,7 +600,7 @@ Value debug(const Array& params, bool fHelp)
                                 {
                                     throw JSONRPCError(RPC_INVALID_PARAMETER, "Missing stream");                                    
                                 }
-                                collector.InsertChunk((unsigned char*)&chunk_hash,&entity,(unsigned char*)&txid,vout,chunk_size);
+                                collector.InsertChunk((unsigned char*)&chunk_hash,&entity,(unsigned char*)&txid,vout,chunk_size,0);
                             }
                         }
                     }            
@@ -673,7 +673,7 @@ Value debug(const Array& params, bool fHelp)
                                 if(pwalletTxsMain->m_ChunkDB->GetChunkDef(&chunk_def,(unsigned char *)&chunk_hash,
                                         (entity.m_EntityType == MC_TET_NONE) ? NULL: &entity,(txid == 0) ? NULL : (unsigned char*)&txid,vout) == MC_ERR_NOERROR)
                                 {
-                                    chunk_found=pwalletTxsMain->m_ChunkDB->GetChunk(&chunk_def,0,-1,&chunk_bytes);
+                                    chunk_found=pwalletTxsMain->m_ChunkDB->GetChunk(&chunk_def,0,-1,&chunk_bytes,NULL,NULL);
                                     if(chunk_found)
                                     {
                                         chunk_obj.push_back(Pair("size",(int)chunk_bytes));

@@ -17,6 +17,7 @@
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #endif
+#include "community/community.h"
 
 #include <stdint.h>
 
@@ -26,6 +27,8 @@
 std::string BurnAddress(const std::vector<unsigned char>& vchVersion);
 std::string SetBannedTxs(std::string txlist);
 std::string SetLockedBlock(std::string hash);
+int mc_StoreSetRuntimeParam(std::string param_name);
+
 /* MCHN END */
 
 #include <boost/assign/list_of.hpp>
@@ -70,6 +73,7 @@ Value getinfo(const Array& params, bool fHelp)
     
     obj.push_back(Pair("version", mc_BuildDescription(mc_gState->GetNumericVersion())));
     obj.push_back(Pair("nodeversion", mc_gState->GetNumericVersion()));
+    obj.push_back(Pair("edition", pEF->ENT_Edition()));
     obj.push_back(Pair("protocolversion", mc_gState->m_NetworkParams->ProtocolVersion()));
     obj.push_back(Pair("chainname", string(mc_gState->m_NetworkParams->Name())));
     obj.push_back(Pair("description", string((char*)mc_gState->m_NetworkParams->GetParam("chaindescription",NULL))));
@@ -77,7 +81,7 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("port", GetListenPort()));    
     obj.push_back(Pair("setupblocks", mc_gState->m_NetworkParams->GetInt64Param("setupfirstblocks")));    
     
-    obj.push_back(Pair("nodeaddress", MultichainServerAddress() + strprintf(":%d",GetListenPort())));       
+    obj.push_back(Pair("nodeaddress", MultichainServerAddress(true) + strprintf(":%d",GetListenPort())));       
 
     obj.push_back(Pair("burnaddress", BurnAddress(Params().Base58Prefix(CChainParams::PUBKEY_ADDRESS))));                
     obj.push_back(Pair("incomingpaused", (mc_gState->m_NodePausedState & MC_NPS_INCOMING) ? true : false));                
@@ -118,6 +122,36 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("relayfee",      ValueFromAmount(::minRelayTxFee.GetFeePerK())));
     obj.push_back(Pair("errors",        GetWarnings("statusbar")));
     return obj;
+}
+
+Value getnodestatus(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)  
+        throw runtime_error("Help message not found\n");
+
+    Object obj;
+    
+    obj.push_back(Pair("version", mc_BuildDescription(mc_gState->GetNumericVersion())));
+    obj.push_back(Pair("nodeversion", mc_gState->GetNumericVersion()));
+
+    LOCK(cs_NodeStatus);
+    
+    if(pNodeStatus)
+    {
+        obj.push_back(Pair("initialized", false));        
+        obj.push_back(Pair("connecttime", (int64_t)(mc_TimeNowAsUInt()-pNodeStatus->tStartConnectTime)));
+        obj.push_back(Pair("connectaddress", pNodeStatus->sSeedIP));
+        obj.push_back(Pair("connectport", pNodeStatus->nSeedPort));
+        obj.push_back(Pair("handshakelocal", pNodeStatus->sAddress));
+        obj.push_back(Pair("lasterror", pNodeStatus->sLastError));
+    }
+    else
+    {
+        obj.push_back(Pair("initialized", (mc_gState->m_NetworkParams->m_Status == MC_PRM_STATUS_VALID) ));        
+    }
+    
+    return obj;
+    
 }
 
 #ifdef ENABLE_WALLET
@@ -281,6 +315,7 @@ bool paramtobool(Value param)
     return paramtobool(param,true);
 }
 
+
 Value setruntimeparam(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)                                            
@@ -292,6 +327,14 @@ Value setruntimeparam(const json_spirit::Array& params, bool fHelp)
     }
     
     string param_name=params[0].get_str();
+    string old_value="";
+    bool old_value_found=false;
+    if (mapArgs.count("-" + param_name))
+    {
+        old_value_found=true;
+        old_value=mapArgs["-" + param_name];
+    }
+    
     bool fFound=false;
     if(param_name == "miningrequirespeers")
     {
@@ -494,6 +537,10 @@ Value setruntimeparam(const json_spirit::Array& params, bool fHelp)
         {
             string autosubscribe=params[1].get_str();
             uint32_t mode=MC_WMD_NONE;
+            
+            mode |= mc_AutosubscribeWalletMode(params[1].get_str(),false);
+
+/*
             bool found=false;
             if(autosubscribe=="streams")
             {
@@ -519,6 +566,14 @@ Value setruntimeparam(const json_spirit::Array& params, bool fHelp)
             {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter value");                                                                        
             }
+*/
+            if(mode == MC_WMD_NONE)
+            {
+                if(params[1].get_str().size() != 0)
+                {
+                    throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter value");                                                                                            
+                }
+            }
             
             if(pwalletTxsMain)
             {
@@ -538,7 +593,21 @@ Value setruntimeparam(const json_spirit::Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Unsupported runtime parameter: " + param_name);                                                    
     }
 
+    if(mc_StoreSetRuntimeParam(param_name))
+    {
+        if(old_value_found)
+        {
+            mapArgs["-" + param_name]=old_value;
+        }
+        else
+        {
+            mapArgs.erase("-" + param_name);
+        }
+        throw JSONRPCError(RPC_GENERAL_FILE_ERROR, "Cannot store new parameter value permanently");                                                            
+    }
+    
     SetMultiChainRuntimeParams();    
+    
     
     return Value::null;
 }    
@@ -998,7 +1067,8 @@ Value getaddresses(const Array& params, bool fHelp)
         {
             lpEntity=pwalletTxsMain->GetEntity(i);        
             CBitcoinAddress address;
-            if( (lpEntity->m_Entity.m_EntityType & MC_TET_ORDERMASK) == MC_TET_CHAINPOS)
+            if( ((lpEntity->m_Entity.m_EntityType & MC_TET_ORDERMASK) == MC_TET_CHAINPOS) &&
+                ((lpEntity->m_Flags & MC_EFL_NOT_IN_LISTS) == 0 ) )   
             {
                 if(CBitcoinAddressFromTxEntity(address,&(lpEntity->m_Entity)))
                 {

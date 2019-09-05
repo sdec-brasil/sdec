@@ -157,6 +157,12 @@ typedef struct mc_Features
     int FixedJSDateFunctions();
     int DisabledJSDateParse();
     int FixedLegacyPermissionRestrictionFlag();
+    int ReadPermissions();
+    int SaltedChunks();
+    int FixedIn20010();
+    int License20010();
+    int ExtendedEntityDetails();
+    int FixedSpendingBigScripts();
 } mc_Features;
 
 typedef struct mc_BlockHeaderInfo
@@ -194,6 +200,8 @@ typedef struct mc_TmpBuffers
     mc_SHA256               *m_RpcHasher1;
     mc_Script               *m_RpcChunkScript1;
     mc_Script               *m_RelayTmpBuffer;
+    mc_Script               *m_LicenseTmpBuffer;
+    mc_Script               *m_LicenseTmpBufferForHash;
     
     void  Init()
     {
@@ -219,6 +227,8 @@ typedef struct mc_TmpBuffers
         m_RpcHasher1=new mc_SHA256();
         m_RpcChunkScript1=new mc_Script();
         m_RelayTmpBuffer=new mc_Script();
+        m_LicenseTmpBuffer=new mc_Script();
+        m_LicenseTmpBufferForHash=new mc_Script();
     }    
 
     void  Destroy()
@@ -238,6 +248,8 @@ typedef struct mc_TmpBuffers
         delete m_RpcHasher1;
         delete m_RpcChunkScript1;
         delete m_RelayTmpBuffer;
+        delete m_LicenseTmpBuffer;
+        delete m_LicenseTmpBufferForHash;
     }
     
 } mc_TmpBuffers;
@@ -268,6 +280,7 @@ typedef struct mc_State
     uint32_t m_Compatibility;
     uint32_t m_SessionFlags;
     unsigned char m_BurnAddress[20];
+    int m_EnterpriseBuild;
     
     mc_Script               *m_TmpScript;
     mc_Script               *m_TmpScript1;
@@ -292,6 +305,7 @@ typedef struct mc_State
         m_NodePausedState=MC_NPS_NONE;
         m_ProtocolVersionToUpgrade=0;
         m_SessionFlags=MC_SSF_DEFAULT;
+        m_EnterpriseBuild=0;
         memset(m_BurnAddress,0,20);
         
         m_IPv4Address=0;

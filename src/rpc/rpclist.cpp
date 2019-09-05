@@ -50,6 +50,7 @@ static const CRPCCommand vRPCCommands[] =
   //  --------------------- ------------------------  -----------------------  ---------- ---------- ---------
     /* Overall control/query calls */
     { "control",            "getinfo",                &getinfo,                true,      false,      false }, /* uses wallet if enabled */
+    { "control",            "getnodestatus",          &getnodestatus,          true,      true,       true  },
     { "control",            "help",                   &help,                   true,      true,       false },
     { "control",            "stop",                   &stop,                   true,      true,       false },
 /* MCHN START */    
@@ -166,6 +167,29 @@ static const CRPCCommand vRPCCommands[] =
     { "hidden",             "filters",                &purehelpitem_nomethod,         true,      true,       true },
 
 #ifdef ENABLE_WALLET
+    /* Licensing */
+    { "hidden",             "getlicenserequest",      &getlicenserequest,       true,      false,      true },
+    { "hidden",             "decodelicenserequest",   &decodelicenserequest,    true,      false,      true },
+    { "hidden",             "decodelicenseconfirmation",   &decodelicenseconfirmation,    true,      false,      true },
+    { "hidden",             "activatelicense",        &activatelicense,         true,      false,      true },
+    { "hidden",             "activatelicensefrom",    &activatelicensefrom,     true,      false,      true },
+    { "hidden",             "transferlicense",        &transferlicense,         true,      false,      true },
+    { "hidden",             "takelicense",            &takelicense,             true,      false,      true },
+    { "hidden",             "listlicenses",           &listlicenses,            true,      false,      true },
+    { "hidden",             "getlicenseconfirmation", &getlicenseconfirmation,  true,      false,      true },
+    { "hidden",             "importlicenserequest",   &importlicenserequest,       true,      false,      true },
+    
+    { "hidden",             "createfeed",             &createfeed,              true,      false,      false },
+    { "hidden",             "suspendfeed",            &suspendfeed,             true,      false,      false },
+    { "hidden",             "deletefeed",             &deletefeed,              true,      false,      false },
+    { "hidden",             "rescanfeed",             &rescanfeed,              true,      false,      false },
+    { "hidden",             "addfeedstreams",         &addfeedstreams,          true,      false,      false },
+    { "hidden",             "removefeedstreams",      &removefeedstreams,       true,      false,      false },
+    { "hidden",             "addfeedblocks",          &addfeedblocks,           true,      false,      false },
+    { "hidden",             "removefeedblocks",       &removefeedblocks,        true,      false,      false },
+    { "hidden",             "purgefeedfile",          &purgefeedfile,           true,      false,      false },
+    { "hidden",             "listfeeds",              &listfeeds,               true,      false,      false },
+
     /* Wallet */
     { "wallet",             "addmultisigaddress",     &addmultisigaddress,     true,      false,      true },
     { "wallet",             "backupwallet",           &backupwallet,           true,      false,      true },

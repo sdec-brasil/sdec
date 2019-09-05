@@ -58,6 +58,9 @@ typedef struct mc_Script
     size_t GetParamValue(const unsigned char *ptr,size_t total,size_t offset,size_t* param_value_start,size_t *bytes);
     int SetData(const unsigned char* src,const size_t bytes);
     const unsigned char* GetData(int element,size_t *bytes);
+
+    int GetSize();
+    int ShrinkCurrentElementSizeBy(int size);
     
     int GetElement();
     int SetElement(int element);
@@ -92,6 +95,9 @@ typedef struct mc_Script
     int GetGeneralDetails(unsigned char* script,int *script_size);
     int SetGeneralDetails(const unsigned char* script,int script_size);
     
+    int GetExtendedDetails(unsigned char **script,size_t *script_size);
+    int SetExtendedDetails(const unsigned char* script,size_t script_size);
+    
     int GetAssetQuantities(mc_Buffer *amounts,uint32_t script_type);
     int SetAssetQuantities(mc_Buffer *amounts,uint32_t script_type);
 
@@ -107,13 +113,13 @@ typedef struct mc_Script
     int SetDataFormat(const uint32_t format);
     
     int GetChunkDef(uint32_t *format,unsigned char** hashes,int *chunk_count,int64_t *total_size);
-    int GetChunkDef(uint32_t *format,unsigned char** hashes,int *chunk_count,int64_t *total_size,int check_sizes);
-    int SetChunkDefHeader(const uint32_t format,int chunk_count);
+    int GetChunkDef(uint32_t *format,unsigned char** hashes,int *chunk_count,int64_t *total_size,uint32_t *salt_size,int check_sizes);
+    int SetChunkDefHeader(const uint32_t format,int chunk_count,uint32_t salt_size);
     int SetChunkDefHash(unsigned char *hash,int size);
     
     int ExtractAndDeleteDataFormat(uint32_t *format);
     int ExtractAndDeleteDataFormat(uint32_t *format,unsigned char** hashes,int *chunk_count,int64_t *total_size);
-    int ExtractAndDeleteDataFormat(uint32_t *format,unsigned char** hashes,int *chunk_count,int64_t *total_size,int check_sizes);
+    int ExtractAndDeleteDataFormat(uint32_t *format,unsigned char** hashes,int *chunk_count,int64_t *total_size,uint32_t *salt_size,int check_sizes);
     int DeleteDuplicatesInRange(int from,int to);
     
     

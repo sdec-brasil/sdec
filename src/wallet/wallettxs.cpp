@@ -20,9 +20,43 @@ using namespace json_spirit;
 int64_t GetAdjustedTime();
 void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 bool CBitcoinAddressFromTxEntity(CBitcoinAddress &address,mc_TxEntity *lpEntity);
+bool IsLicenseTokenIssuance(mc_Script *lpScript,uint256 hash);
+bool IsLicenseTokenTransfer(mc_Script *lpScript,mc_Buffer *amounts);
 
 using namespace std;
 
+uint32_t mc_AutosubscribeWalletMode(std::string parameters,bool check_license)
+{
+    uint32_t mode=0;
+    
+    vector<string> inputStrings;
+    stringstream ss(parameters); 
+    string tok;
+    
+    while(getline(ss, tok, ',')) 
+    {
+        inputStrings.push_back(tok);
+    }
+    
+    for(int is=0;is<(int)inputStrings.size();is++)
+    {
+        if(inputStrings[is] == "assets")
+        {
+            mode |= MC_WMD_AUTOSUBSCRIBE_ASSETS;
+        }
+        if(inputStrings[is] == "streams")
+        {
+            mode |= MC_WMD_AUTOSUBSCRIBE_STREAMS;
+        }
+    }
+
+    if(pEF->STR_CheckAutoSubscription(parameters,check_license))
+    {
+            mode |= MC_WMD_AUTOSUBSCRIBE_STREAMS;        
+    }
+    
+    return mode;
+}
 
 void WalletTxNotify(mc_TxImport *imp,const CWalletTx& tx,int block,bool fFound,uint256 block_hash)
 {
@@ -1066,6 +1100,10 @@ int mc_WalletTxs::RollBack(mc_TxImport *import,int block)
                                                             {
                                                                 txout.m_Flags |= MC_TFL_IS_SPENDABLE;
                                                             }
+                                                            if(prevtxdef.m_Flags & MC_TFL_IS_LICENSE_TOKEN) // License token transfer
+                                                            {
+                                                                txout.m_Flags |= MC_TFL_IS_LICENSE_TOKEN;
+                                                            }
                                                         }
                                                         mc_TxEntity input_entity;
                                                         GetSingleInputEntity(prevwtx,&input_entity); // Check if the entity coinsides with single input entity of prev tx - change
@@ -1192,6 +1230,7 @@ int mc_WalletTxs::RollBack(mc_TxImport *import,int block)
                         if (itold == m_UTXOs[import_pos].end())
                         {
                             m_UTXOs[import_pos].insert(make_pair(txouts[i].m_OutPoint, txouts[i]));
+                            pEF->LIC_VerifyUpdateCoin(block,&(txouts[i]),true);
                         }                    
                     }
                 }
@@ -2003,6 +2042,7 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
     bool fOutputIsSpendable;
     bool fNewStream;
     bool fNewAsset;
+    bool fLicenseTokenTransfer;
     std::vector<mc_Coin> txoutsIn;
     std::vector<mc_Coin> txoutsOut;
     uint256 hash;
@@ -2100,6 +2140,8 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
     fSingleInputEntity=true;
     fNewStream=false;
     fNewAsset=false;
+    fLicenseTokenTransfer=false;
+    
     input_entity.Zero();
     BOOST_FOREACH(const CTxIn& txin, tx.vin)                                    //Checking inputs    
     {
@@ -2275,6 +2317,20 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
                 }
             }            
             
+            if(fNewAsset)
+            {
+                if(IsLicenseTokenIssuance(mc_gState->m_TmpScript,hash))
+                {
+                    utxo.m_Flags |= MC_TFL_IS_LICENSE_TOKEN;
+                    fNewAsset=false;
+                }
+            }
+            if(IsLicenseTokenTransfer(mc_gState->m_TmpScript,mc_gState->m_TmpAssetsOut))
+            {
+                fLicenseTokenTransfer=true;
+                utxo.m_Flags |= MC_TFL_IS_LICENSE_TOKEN;
+            }
+            
             BOOST_FOREACH(const CTxDestination& dest, addressRets)
             {
                 entity.Zero();
@@ -2355,8 +2411,9 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
             int chunk_count,chunk_err;
             int chunk_size,chunk_shift;
             size_t chunk_bytes;
+            uint32_t salt_size;
             
-            mc_gState->m_TmpScript->ExtractAndDeleteDataFormat(NULL,&chunk_hashes,&chunk_count,NULL);
+            mc_gState->m_TmpScript->ExtractAndDeleteDataFormat(NULL,&chunk_hashes,&chunk_count,NULL,&salt_size,0);
             if(mc_gState->m_TmpScript->GetNumElements() >= 3) // 2 OP_DROPs + OP_RETURN - item key
             {
                 mc_gState->m_TmpScript->DeleteDuplicatesInRange(1,mc_gState->m_TmpScript->GetNumElements()-1);
@@ -2390,11 +2447,13 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
                                 {
                                     if(m_ChunkDB->GetChunkDef(&chunk_def,chunk_hashes,NULL,NULL,-1) == MC_ERR_NOERROR)
                                     {
-                                        chunk_found=m_ChunkDB->GetChunk(&chunk_def,0,-1,&chunk_bytes);
+                                        unsigned char salt[MC_CDB_CHUNK_SALT_SIZE];
+                                        uint32_t salt_size;
+                                        chunk_found=m_ChunkDB->GetChunk(&chunk_def,0,-1,&chunk_bytes,salt,&salt_size);
                                         if(chunk_found)
                                         {
                                             memcpy(m_ChunkBuffer,chunk_found,chunk_size);
-                                            chunk_err=m_ChunkDB->AddChunk(chunk_hashes,&chunk_entity,(unsigned char*)&hash,i,m_ChunkBuffer,NULL,chunk_size,0,0);
+                                            chunk_err=m_ChunkDB->AddChunk(chunk_hashes,&chunk_entity,(unsigned char*)&hash,i,m_ChunkBuffer,NULL,salt,chunk_size,0,salt_size,0);
                                             if(chunk_err)
                                             {
                                                 err=chunk_err;
@@ -2409,7 +2468,27 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
                                     }
                                     else
                                     {
-                                        m_ChunkCollector->InsertChunk(chunk_hashes,&chunk_entity,(unsigned char*)&hash,i,chunk_size);
+                                        bool insert_it=false;
+                                        mc_EntityDetails entity_details;
+
+                                        if(mc_gState->m_Assets->FindEntityByShortTxID(&entity_details,short_txid))
+                                        {
+                                            if(entity_details.AnyoneCanRead())
+                                            {
+                                                insert_it=true;                                                
+                                            }
+                                            else
+                                            {
+                                                if(pEF->WLT_FindReadPermissionedAddress(&entity_details).IsValid())
+                                                {
+                                                    insert_it=true;                                                                                                    
+                                                }
+                                            }
+                                        }
+                                        if(insert_it)
+                                        {
+                                            m_ChunkCollector->InsertChunk(chunk_hashes,&chunk_entity,(unsigned char*)&hash,i,chunk_size,salt_size);
+                                        }
                                         // Feeding async chunk retriever here
                                     }
                                 }
@@ -2612,7 +2691,10 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
                             {
                                 if(imp->m_ImportID == 0)
                                 {
-                                    fNewStream=true;
+                                    if(mc_AutosubscribeWalletMode(GetArg("-autosubscribe","none"),true) & MC_WMD_AUTOSUBSCRIBE_STREAMS)
+                                    {
+                                        fNewStream=true;
+                                    }
                                 }
 /*                                
                                 else
@@ -2783,7 +2865,10 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
     {
         flags |= MC_TFL_ALL_INPUTS_FROM_ME;
     }
-    
+    if(fLicenseTokenTransfer)                                                   
+    {
+        flags |= MC_TFL_IS_LICENSE_TOKEN;                                       // Needed for rollback, license issuance is not pure license tx
+    }
     timestamp=mc_TimeNowAsUInt();
     if(block >= 0)
     {
@@ -2830,6 +2915,7 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
         for(i=0;i<(int)txoutsIn.size();i++)
         {
             m_UTXOs[import_pos].erase(txoutsIn[i].m_OutPoint);
+            pEF->LIC_VerifyUpdateCoin(block,&(txoutsIn[i]),false);
         }
         for(i=0;i<(int)txoutsOut.size();i++)
         {
@@ -2851,6 +2937,7 @@ int mc_WalletTxs::AddTx(mc_TxImport *import,const CWalletTx& tx,int block,CDiskT
                     }
                 }
                 m_UTXOs[import_pos].insert(make_pair(txoutsOut[i].m_OutPoint, txoutsOut[i]));
+                pEF->LIC_VerifyUpdateCoin(block,&(txoutsOut[i]),true);
             }                    
         }
     }    
@@ -2876,6 +2963,16 @@ exitlbl:
             entity.m_EntityType=MC_TET_STREAM_PUBLISHER | MC_TET_TIMERECEIVED;
             m_Database->AddEntity(imp,&entity,0); 
 
+            entity.m_EntityType=MC_TET_STREAM | MC_TET_CHAINPOS;
+            err=pEF->STR_CreateAutoSubscription(&entity);
+            if(err == MC_ERR_FOUND)
+            {
+                err=MC_ERR_NOERROR;
+            }
+            if(err != MC_ERR_NOERROR)
+            {
+                LogPrintf("wtxs: Create Enterprise Subscription  Error: %d\n",err);                        
+            }
             if(mc_gState->m_Features->Chunks())
             {
                 entity.m_EntityType=MC_TET_STREAM;

@@ -1402,11 +1402,12 @@ void mc_InitRPCHelpMap06()
             "\nArguments:\n"
             "1. \"entity-type\"                    (string, required) stream\n"
             "2. \"stream-name\"                    (string, required) Stream name, if not \"\" should be unique.\n"
-            "3. open                             (boolean, required ) Allow anyone to publish in this stream\n"
+            "3. open                             (boolean, required) Allow anyone to publish in this stream\n"
             "  or \n"
             "3. restrictions                     (object, optional) Stream restrictions\n"
             "    {\n"
-            "      \"restrict\" : \"restrictions\"   (string, optional) Stream restrictions, comma delimited. Possible values: write,offchain,onchain\n"
+            "      \"restrict\" : \"restrictions\"   (string, optional) Stream restrictions, comma delimited. Possible values: write,read,offchain,onchain\n"
+            "      \"salted\" : true|false         (boolean, optional) Indicates whether offchain item chunk hashes should be salted\n"
             "    }\n"
             "4  custom-fields                    (object, optional)  a json object with custom fields\n"
             "    {\n"
@@ -1416,7 +1417,7 @@ void mc_InitRPCHelpMap06()
             "  or \n"
             "1. \"entity-type\"                    (string, required) upgrade\n"
             "2. \"upgrade-name\"                   (string, required) Upgrade name, if not \"\" should be unique.\n"
-            "3. open                             (boolean, required ) Should be false\n"
+            "3. open                             (boolean, required) Should be false\n"
             "4  custom-fields                    (object, required)  a json object with custom fields\n"
             "    {\n"
             "      \"protocol-version\": version   (numeric, optional) Protocol version to upgrade to\n"
@@ -1493,6 +1494,7 @@ void mc_InitRPCHelpMap06()
             "4. restrictions                     (object, optional) Stream restrictions\n"
             "    {\n"
             "      \"restrict\" : \"restrictions\"   (string, optional) Stream restrictions, comma delimited. Possible values: write,offchain,onchain\n"
+            "      \"salted\" : true|false         (boolean, optional) Indicates whether offchain item chunk hashes should be salted\n"
             "    }\n"
             "5  custom-fields                    (object, optional)  a json object with custom fields\n"
             "    {\n"
@@ -2078,7 +2080,7 @@ void mc_InitRPCHelpMap09()
             "{\n"
             "  \"walletversion\": xxxxx,           (numeric) the wallet version\n"
             "  \"balance\": xxxxxxx,               (numeric) the total native currency balance of the wallet\n"
-            "  \"txcount\": xxxxxxx,               (numeric) the total number of transactions in the wallet\n"
+            "  \"txcount\": xxxxxxx,               (numeric) the total number of transactions and stream keys in the wallet\n"
             "  \"walletdbversion\": xxxxx,         (numeric) the wallet database version\n"
             "  \"keypoololdest\": xxxxxx,          (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
             "  \"keypoolsize\": xxxx,              (numeric) how many new keys are pre-generated\n"
@@ -2142,7 +2144,7 @@ void mc_InitRPCHelpMap09()
             "2. \"permission(s)\"                  (string, required)  Permission strings, comma delimited. \n"
             "                                                        Global: " + AllowedPermissions() + " \n"
             "                                                        or per-asset: asset-identifier.issue,admin,activate,send,receive \n"
-            "                                                        or per-stream: stream-identifier.write,activate,admin \n"
+            "                                                        or per-stream: stream-identifier.write,read,activate,admin \n"
             "3. native-amount                    (numeric, optional) Native currency amount to send. eg 0.1. Default - 0.0\n"
             "4. startblock                       (numeric, optional) Block to apply permissions from (inclusive). Default - 0\n"
             "5. endblock                         (numeric, optional) Block to apply permissions to (exclusive). Default - 4294967295\n"
@@ -2171,7 +2173,7 @@ void mc_InitRPCHelpMap09()
             "3. \"permission(s)\"                  (string, required)  Permission strings, comma delimited. \n"
             "                                                        Global: " + AllowedPermissions() + " \n"
             "                                                        or per-asset: asset-identifier.issue,admin,activate,send,receive \n"
-            "                                                        or per-stream: stream-identifier.write,activate,admin \n"
+            "                                                        or per-stream: stream-identifier.write,read,activate,admin \n"
             "4. native-amount                    (numeric, optional) Native currency amount to send. eg 0.1. Default - 0.0\n"
             "5. startblock                       (numeric, optional) Block to apply permissions from (inclusive). Default - 0\n"
             "6. endblock                         (numeric, optional) Block to apply permissions to (exclusive). Default - 4294967295\n"
@@ -2358,7 +2360,6 @@ void mc_InitRPCHelpMap10()
             "      \"name\" : \"asset-name\"         (string, optional) Asset name\n"
             "      \"open\" : true|false           (boolean, optional, default false) True if follow-on issues are allowed\n"
             "      \"restrict\" : \"restrictions\"   (string, optional) Permission strings, comma delimited. Possible values: send,receive\n"
-            "      ,...\n"
             "    }\n"                                
             "3. quantity                         (numeric, required) The asset total amount in display units. eg. 1234.56\n"
             "4. smallest-unit                    (numeric, optional, default=1) Number of raw units in one displayed unit, eg 0.01 for cents\n"
@@ -2390,7 +2391,6 @@ void mc_InitRPCHelpMap10()
             "      \"name\" : \"asset-name\"         (string, optional) Asset name\n"
             "      \"open\" : true|false           (boolean, optional, default false) True if follow-on issues are allowed\n"
             "      \"restrict\" : \"restrictions\"   (string, optional) Permission strings, comma delimited. Possible values: send,receive\n"
-            "      ,...\n"
             "    }\n"                                
             "4. quantity                         (numeric, required) The asset total amount in display units. eg. 1234.56\n"
             "5. smallest-unit                    (numeric, optional, default=1) Number of raw units in one displayed unit, eg 0.01 for cents\n"
@@ -3553,7 +3553,7 @@ void mc_InitRPCHelpMap15()
         ));
     
     mapHelpStrings.insert(std::make_pair("subscribe",
-            "subscribe entity-identifier(s) ( rescan" + pEF->ENT_TextConstant("help-subscribe-parameters") + " )\n"
+            "subscribe entity-identifier(s) ( rescan parameters )\n"
             "\nSubscribes to the stream.\n"
             "\nArguments:\n"
             "1. \"stream-identifier\"              (string, required) Stream identifier - one of: create txid, stream reference, stream name.\n"
@@ -3562,7 +3562,15 @@ void mc_InitRPCHelpMap15()
             " or\n"
             "1. entity-identifier(s)             (array, optional) A json array of stream or asset identifiers \n"                
             "2. rescan                           (boolean, optional, default=true) Rescan the wallet for transactions\n"
-            + pEF->ENT_TextConstant("help-subscribe-parameters-details") +
+            "3. \"parameters\"                     (string, optional) Available only in Enterprise Edition.\n"
+            "                                                       Comma-delimited subset of: \n"
+            "                                                         retrieve - automatically retrieve offchain items, \n"
+            "                                                         items - build index for liststreamitems,\n"
+            "                                                         keys - build index for liststreamkeys, liststreamkeyitems, getstreamkeysummary,\n"
+            "                                                         publishers - build index for liststreampublishers, liststreampublisheritems, getstreampublishersummary,\n"
+            "                                                         items-local - same as items, for local-ordering=true,\n"
+            "                                                         keys-local - same as keys, for local-ordering=true,\n"
+            "                                                         publishers-local - same as publishers, for local-ordering=true\n"
             "\nNote: This call can take minutes to complete if rescan is true.\n"
             "\nResult:\n"
             "\nExamples:\n"
@@ -3881,6 +3889,7 @@ void mc_InitRPCHelpMap16()
             "      \"name\" : \"stream-name\"          (string, optional) Stream name\n"
             "      \"open\" : true|false             (boolean, optional, default: false) If true, anyone can publish\n"
             "      \"restrict\" : \"restrictions\"     (string, optional) Stream restrictions, comma delimited. Possible values: write,offchain,onchain\n"
+            "      \"salted\" : true|false           (boolean, optional) Indicates whether offchain item chunk hashes should be salted\n"
             "      \"details\" :                     (object, optional) A json object with custom fields\n"           
             "        {\n"
             "          \"param-name\": \"param-value\" (strings, required) The key is the parameter name, the value is parameter value\n"
@@ -4656,7 +4665,346 @@ void mc_InitRPCHelpMap20()
             + HelpExampleRpc("txouttobinarycache", "\"TjnVWwHYEg4\", \"txid\", 1")
         ));
     
-     mapHelpStrings.insert(std::make_pair("AAAAAAA",
+    mapHelpStrings.insert(std::make_pair("trimsubscribe",
+            "trimsubscribe stream-identifier(s) \"parameters\"\n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nRemoves indexes from subscriptions to the stream.\n"
+            "\nArguments:\n"
+            "1. \"stream-identifier\"              (string, required) Stream identifier - one of: create txid, stream reference, stream name.\n"
+            " or\n"
+            "1. stream-identifier(s)             (array, optional) A json array of stream identifiers \n"                
+            "2. \"parameters\"                     (string, required) Comma-delimited subset of: \n"
+            "                                                         retrieve - stop automatic retrieval of offchain items, \n"
+            "                                                         keys - trim index for liststreamkeys, liststreamkeyitems, getstreamkeysummary,\n"
+            "                                                         publishers - trim index for liststreampublishers, liststreampublisheritems, getstreampublishersummary,\n"
+            "                                                         items-local - trim index for liststreamitems for local-ordering=true,\n"
+            "                                                         keys-local - same as keys, for local-ordering=true,\n"
+            "                                                         publishers-local - same as publishers, for local-ordering=true\n"
+            "\nResult:\n"
+            "\nExamples:\n"
+            + HelpExampleCli("trimsubscribe", "\"test-stream\" \"retrieve,publishers\"") 
+            + HelpExampleRpc("trimsubscribe", "\"test-stream\", \"retrieve,publishers\"")
+         ));
+    
+    mapHelpStrings.insert(std::make_pair("retrievestreamitems",
+            "retrievestreamitems stream-identifier \"txids\"|txouts|blocks|query\n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nSchedules retrieval of offchain data for specific items in the stream\n"
+            "\nArguments:\n"
+            "1. \"stream-identifier\"              (string, required) Stream identifier - one of: create txid, stream reference, stream name.\n"
+            "2. \"txids\"                          (string, required) \"all\" or list of transactions, comma delimited\n"
+            " or\n"         
+            "2. txids                            (array, required) Array of transactions IDs\n"
+            " or\n"             
+            "2. txouts                           (array, required) Array of transaction outputs\n"
+            " [\n"
+            "   {\n"
+            "     \"txid\":\"id\",                   (string, required) The transaction id\n"
+            "     \"vout\":n                       (numeric, required) The output number\n"
+            "   }\n"
+            "  ,...\n"
+            " ]\n"
+            " or\n"         
+            "2. blocks                           (object, required) List of transactions in block range\n"
+            "  { \"blocks\":\n"
+            "    \"block-set-identifier\"          (string, required) Comma delimited list of block identifiers: \n"
+            "                                                       block height,\n"
+            "                                                       block hash,\n"
+            "                                                       block height range, e.g. <block-from>-<block-to>,\n"
+            "                                                       number of last blocks in the active chain (if negative),\n"
+            "  or\n"
+            "    block-set-identifier            (array, required)  A json array of block identifiers \n"                
+            "  or\n"
+            "    block-set-identifier            (object, required) A json object with time range\n"
+            "    {\n"                
+            "      \"starttime\" : start-time      (numeric,required) Start time.\n"
+            "      \"endtime\" : end-time          (numeric,required) End time.\n"
+            "    }\n"                                
+            "  }\n"                                
+            " or\n"         
+            "2. query                            (object, required) Query (AND logic)\n"
+            "  {\n"                
+            "    \"key\" : \"key\"                   (string, optional, default: \"\") Item key\n"
+            "      or\n"
+            "    \"keys\" : keys                   (array, optional) Item keys, array of strings\n"
+            "      and/or\n"
+            "    \"publisher\" : \"publisher\"       (string, optional, default: \"\") Publisher\n"
+            "      or\n"
+            "    \"publishers\" : publishers       (array, optional) Publishers, array of strings\n"
+            "  }\n"                                
+            "\nReturns statistics about changes in chunk queue.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("retrievestreamitems", "\"test-stream\" \"{\\\"keys\\\":[\\\"key01\\\",\"key02\"]}\"") 
+            + HelpExampleCli("retrievestreamitems", "\"test-stream\" \"{\\\"keys\\\":[\\\"key01\\\",\"key02\"],\\\"publisher\\\":\\\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\\\"}\" true ") 
+            + HelpExampleRpc("retrievestreamitems", "\"test-stream\", \"{\\\"keys\\\":[\\\"key01\\\",\"key02\"],\\\"publisher\\\":\\\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\\\"}\", false")
+         ));
+    
+    mapHelpStrings.insert(std::make_pair("purgestreamitems",
+            "purgestreamitems stream-identifier \"txids\"|txouts|blocks|query\n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nPurges offchain data for specific items in the stream.\n"
+            "\nArguments:\n"
+            "1. \"stream-identifier\"              (string, required) Stream identifier - one of: create txid, stream reference, stream name.\n"
+            "2. \"txids\"                          (string, required) \"all\" or list of transactions, comma delimited\n"
+            " or\n"         
+            "2. txids                            (array, required) Array of transactions IDs\n"
+            " or\n"             
+            "2. txouts                           (array, required) Array of transaction outputs\n"
+            " [\n"
+            "   {\n"
+            "     \"txid\":\"id\",                   (string, required) The transaction id\n"
+            "     \"vout\":n                       (numeric, required) The output number\n"
+            "   }\n"
+            "  ,...\n"
+            " ]\n"
+            " or\n"         
+            "2. blocks                           (object, required) List of transactions in block range\n"
+            "  { \"blocks\":\n"
+            "    \"block-set-identifier\"          (string, required) Comma delimited list of block identifiers: \n"
+            "                                                       block height,\n"
+            "                                                       block hash,\n"
+            "                                                       block height range, e.g. <block-from>-<block-to>,\n"
+            "                                                       number of last blocks in the active chain (if negative),\n"
+            "  or\n"
+            "    block-set-identifier            (array, required)  A json array of block identifiers \n"                
+            "  or\n"
+            "    block-set-identifier            (object, required) A json object with time range\n"
+            "    {\n"                
+            "      \"starttime\" : start-time      (numeric,required) Start time.\n"
+            "      \"endtime\" : end-time          (numeric,required) End time.\n"
+            "    }\n"                                
+            "  }\n"                                
+            " or\n"         
+            "2. query                            (object, required) Query (AND logic)\n"
+            "  {\n"                
+            "    \"key\" : \"key\"                   (string, optional, default: \"\") Item key\n"
+            "      or\n"
+            "    \"keys\" : keys                   (array, optional) Item keys, array of strings\n"
+            "      and/or\n"
+            "    \"publisher\" : \"publisher\"       (string, optional, default: \"\") Publisher\n"
+            "      or\n"
+            "    \"publishers\" : publishers       (array, optional) Publishers, array of strings\n"
+            "  }\n"                                
+            "\nReturns statistics about purged items.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("purgestreamitems", "\"test-stream\" \"{\\\"keys\\\":[\\\"key01\\\",\"key02\"]}\"") 
+            + HelpExampleCli("purgestreamitems", "\"test-stream\" \"{\\\"keys\\\":[\\\"key01\\\",\"key02\"],\\\"publisher\\\":\\\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\\\"}\" true ") 
+            + HelpExampleRpc("purgestreamitems", "\"test-stream\", \"{\\\"keys\\\":[\\\"key01\\\",\"key02\"],\\\"publisher\\\":\\\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\\\"}\", false")
+         ));
+    
+    mapHelpStrings.insert(std::make_pair("purgepublisheditems",
+            "purgepublisheditems \"txids\"|txouts|blocks\n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nPurges offchain items published by this node\n"
+            "\nArguments:\n"
+            "1. \"txids\"                          (string, required) \"all\" or list of transactions, comma delimited\n"
+            " or\n"         
+            "1. txids                            (array, required) Array of transactions IDs\n"
+            " or\n"             
+            "1. txouts                           (array, required) Array of transaction outputs\n"
+            " [\n"
+            "   {\n"
+            "     \"txid\":\"id\",                   (string, required) The transaction id\n"
+            "     \"vout\":n                       (numeric, required) The output number\n"
+            "   }\n"
+            "  ,...\n"
+            " ]\n"
+            " or\n"         
+            "1. blocks                           (object, required) List of transactions in block range\n"
+            "  { \"blocks\":\n"
+            "    \"block-set-identifier\"          (string, required) Comma delimited list of block identifiers: \n"
+            "                                                       block height,\n"
+            "                                                       block hash,\n"
+            "                                                       block height range, e.g. <block-from>-<block-to>,\n"
+            "                                                       number of last blocks in the active chain (if negative),\n"
+            "  or\n"
+            "    block-set-identifier            (array, required)  A json array of block identifiers \n"                
+            "  or\n"
+            "    block-set-identifier            (object, required) A json object with time range\n"
+            "    {\n"                
+            "      \"starttime\" : start-time      (numeric,required) Start time.\n"
+            "      \"endtime\" : end-time          (numeric,required) End time.\n"
+            "    }\n"                                
+            "  }\n"                                
+            "\nReturns statistics about purged items.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("purgepublisheditems", "\"mytxid\"") 
+            + HelpExampleRpc("purgepublisheditems", "\"mytxid\"")
+         ));
+    
+    mapHelpStrings.insert(std::make_pair("getlicenserequest",
+            "getlicenserequest \n"
+            "\nReturns license request.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getlicenserequest", "") 
+            + HelpExampleRpc("getlicenserequest", "")    
+       ));
+   
+    mapHelpStrings.insert(std::make_pair("decodelicenserequest",
+            "decodelicenserequest \"license-request-hex\"\n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nReturns a JSON object representing the serialized, hex-encoded license request.\n"
+
+            "\nArguments:\n"
+            "1. \"license-request-hex\"                          (string, required) The license request hex string (output of getlicenserequest)\n"
+
+            "\nExamples:\n"
+            + HelpExampleCli("decoderawtransaction", "\"hexstring\"")
+            + HelpExampleRpc("decoderawtransaction", "\"hexstring\"")
+      ));
+   
+    mapHelpStrings.insert(std::make_pair("decodelicenseconfirmation",
+            "decodelicenseconfirmation \"license-confirmation-hex\"\n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nReturns a JSON object representing the serialized, hex-encoded license request.\n"
+
+            "\nArguments:\n"
+            "1. \"license-confirmation-hex\"                     (string, required) The license confirmation hex string (input of activatelicense)\n"
+
+            "\nExamples:\n"
+            + HelpExampleCli("decodelicenseconfirmation", "\"hexstring\"")
+            + HelpExampleRpc("decodelicenseconfirmation", "\"hexstring\"")
+      ));
+   
+}
+
+void mc_InitRPCHelpMap21()
+{
+    mapHelpStrings.insert(std::make_pair("listlicenses",
+            "listlicenses ( license-identifier(s) verbose ) \n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nReturns list of licenses owned by this node\n"
+            "\nArguments:\n"
+            "1. \"license-identifier(s)\"          (string, optional, default=*) License identifier - one of the following:\n"
+            "                                                                           (license) name\n"
+            "                                                                           confirmation->licensehash\n"
+            "                                                                           transactions->issuetxid\n"
+            "                                                                           transactions->assetref\n"
+            "                                                                           transactions->lasttxid\n"
+            " or\n"
+            "1. license-identifier(s)            (array, optional) A json array of license identifiers \n"                
+            "2. verbose                          (boolean, optional, default=false) If true, returns extended license information \n"
+            "\nResult:\n"
+            "An array containing list of licenses\n"            
+            "\nExamples:\n"
+            + HelpExampleCli("listlicenses", "")
+            + HelpExampleRpc("listlicenses", "")
+        ));
+    
+    mapHelpStrings.insert(std::make_pair("getlicenseconfirmation",
+            "getlicenseconfirmation \"license-request-hex\" ( confirmation-settings )\n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nReturns license confirmation.\n"
+
+            "\nArguments:\n"
+            "1. \"license-request-hex\"                          (string, required) The license request hex string (output of getlicenserequest)\n"
+            "2. confirmation-settings                          (integer, optional) Number of confirmations with default settings to return\n"
+            "  or\n"
+            "2. confirmation-settings                          (object, optional) Confirmation settings for new request. Possible fields:\n"
+            "                                                       count, integer, number of confirmations with these settings to return\n"
+            "                                                       starttime, integer\n"
+            "                                                       endtime,  integer\n"
+            "                                                       interval, integer (in case of conflict with endtime, the last field counts)\n"
+            "                                                       features, integer or hexadecimal string\n"
+            "                                                       single feature, as it appears in the output of listlicenses, boolean\n"
+            "                                                                         (in case of conflict with features, the last field counts)\n"
+            "                                                       flags,  integer\n"
+            "                                                       params,  a json object with custom parameters\n"
+            "                                                       details,  a json object with custom details\n"
+            "  or\n"
+            "2. confirmation-settings                          (object, required) Confirmation settings for request extension. Possible fields:\n"
+            "                                                       extension, required, boolean, should be true\n"
+            "                                                       interval, integer, optional, default - like in previous license\n"
+            "                                                       delay, integer, optional, delay after last license end time, default 0  \n"
+            "  or\n"
+            "2. confirmation-settings                          (array, optional) Array of objects as described above, \"count\" field is ignored\n"
+
+            "\nReturns array of license confirmations.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getlicenseconfirmation", "\"hexstring\"")
+            + HelpExampleRpc("getlicenseconfirmation", "\"hexstring\"")
+      ));
+   
+    mapHelpStrings.insert(std::make_pair("activatelicense",
+            "activatelicense ( \"license-confirmation-hex\" )\n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nActivates Enterprise license.\n"
+
+            "\nArguments:\n"
+            "1. \"license-confirmation-hex\"                     (string, optional) The license confirmation hex string\n"
+            "                                                       If omitted, empty, self-signed license is activated.\n"
+
+            "\nResult:\n"
+            "\"transactionid\"                     (string) The transaction id.\n"
+    
+            "\nExamples:\n"
+            + HelpExampleCli("activatelicense", "\"hexstring\"")
+            + HelpExampleRpc("activatelicense", "\"hexstring\"")
+      ));
+   
+    mapHelpStrings.insert(std::make_pair("transferlicense",
+            "transferlicense \"license-identifier\" \"license-request-hex\" \n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nTransfers Enterprise license.\n"
+
+            "\nArguments:\n"
+            "1. \"license-identifier\"                  (string, required) License identifier - one of the following (see output of listlicenses):\n"
+            "                                                                           (license) name\n"
+            "                                                                           confirmation->licensehash\n"
+            "                                                                           transactions->issuetxid\n"
+            "                                                                           transactions->assetref\n"
+            "                                                                           transactions->lasttxid\n"
+            "2. \"license-request-hex\"                 (string, required) The license confirmation hex string\n"
+            "\nResult:\n"
+            "\"transactionid\"                          (string) The transaction id.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("transferlicense", "\"license-7952-5b4c-fe80-1667\" \"hexstring\"")
+            + HelpExampleRpc("transferlicense", "\"license-7952-5b4c-fe80-1667\",\"hexstring\"")
+      ));
+   
+    mapHelpStrings.insert(std::make_pair("takelicense",
+            "takelicense \"license-identifier\"  \n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nTake Enterprise license to this node and stop any other from using it.\n"
+
+            "\nArguments:\n"
+            "1. \"license-identifier\"                  (string, required) License identifier - one of the following (see output of listlicenses):\n"
+            "                                                                           (license) name\n"
+            "                                                                           confirmation->licensehash\n"
+            "                                                                           transactions->issuetxid\n"
+            "                                                                           transactions->assetref\n"
+            "                                                                           transactions->lasttxid\n"
+            "\nResult:\n"
+            "\"transactionid\"                          (string) The transaction id.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("takelicense", "\"license-7952-5b4c-fe80-1667\"")
+            + HelpExampleRpc("takelicense", "\"license-7952-5b4c-fe80-1667\"")
+      ));
+   
+    mapHelpStrings.insert(std::make_pair("importlicenserequest",
+            "importlicenserequest \"license-request-hex\" \n"
+            "\nAvailable only in Enterprise Edition.\n"
+            "\nImports license request.\n"
+
+            "\nArguments:\n"
+            "1. \"license-request-hex\"                          (string, required) The license request hex string (output of getlicenserequest)\n"
+
+            "\nReturns array of license confirmations.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("importlicenserequest", "\"hexstring\"")
+            + HelpExampleRpc("importlicenserequest", "\"hexstring\"")
+      ));
+   
+     mapHelpStrings.insert(std::make_pair("getnodestatus",
+            "getnodestatus\n"
+            "\nReturns information about initialization status of this node\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getnodestatus", "")
+            + HelpExampleRpc("getnodestatus", "")
+        ));
+  
+    
+    mapHelpStrings.insert(std::make_pair("AAAAAAA",
             ""
         ));
     
@@ -4732,6 +5080,11 @@ void mc_InitRPCAllowedWhenOffline()
     setAllowedWhenOffline.insert("walletlock");    
     setAllowedWhenOffline.insert("walletpassphrase");    
     setAllowedWhenOffline.insert("walletpassphrasechange");    
+    
+    setAllowedWhenOffline.insert("decodelicenserequest");    
+    setAllowedWhenOffline.insert("decodelicenseconfirmation");    
+    setAllowedWhenOffline.insert("getlicenseconfirmation");    
+    
 }
 
 void mc_InitRPCHelpMap()
@@ -4756,6 +5109,7 @@ void mc_InitRPCHelpMap()
     mc_InitRPCHelpMap18();
     mc_InitRPCHelpMap19();
     mc_InitRPCHelpMap20();
+    mc_InitRPCHelpMap21();
     
     pEF->ENT_InitRPCHelpMap();
     
